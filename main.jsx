@@ -3,31 +3,43 @@ import { createRoot } from 'react-dom/client';
 import * as XLSX from 'xlsx';
 import {
   CalendarDays, MapPin, Search, Menu, X, ArrowUpRight, Upload, Download,
-  Users, Trophy, Clock3, Info, RotateCcw, Check, HeartHandshake
+  Users, Trophy, Clock3, Info, RotateCcw, Check, HeartHandshake, Shirt, Gift, Megaphone
 } from 'lucide-react';
+import '@fontsource/barlow-condensed/600.css';
+import '@fontsource/barlow-condensed/700.css';
+import '@fontsource/barlow-condensed/800.css';
+import '@fontsource/barlow-condensed/800-italic.css';
+import '@fontsource/be-vietnam-pro/400.css';
+import '@fontsource/be-vietnam-pro/500.css';
+import '@fontsource/be-vietnam-pro/600.css';
+import '@fontsource/be-vietnam-pro/700.css';
 import './style.css';
+import qrImage from './assets/qr.png';
 
 /* ------------------------------------------------------------------ *
  *  1. CẤU HÌNH GIẢI — chỉ cần sửa ở đây khi có thông tin chính thức
  * ------------------------------------------------------------------ */
 const EVENT = {
   name: 'MSB Pickleball SI Open 2026',
-  dateLabel: 'Thứ Bảy',             // ví dụ: 'Thứ Bảy 14.11.2026'
-  timeLabel: '07:00 – 11:00',
+  dateLabel: 'Thứ Bảy, 07.11.2026',
+  timeLabel: '07:00 – 12:00',
   venue: 'Sân pickleball Thượng Đình',
   address: '129 Nguyễn Trãi, Thanh Xuân, Hà Nội',
-  startISO: '',                     // ví dụ: '2026-11-14T07:00:00+07:00' → bật đồng hồ đếm ngược
+  startISO: '2026-11-07T07:00:00+07:00',   // bật đồng hồ đếm ngược; để '' nếu muốn tắt
+  registerUrl: 'https://forms.cloud.microsoft/r/TVsfqeiqas?origin=QRCode',   // link trong mã QR
+  registerDeadline: '',             // ví dụ: '17:00, 12.11.2026' — để trống thì không hiển thị
   prizeTotal: '10.000.000đ',
   playerTarget: 50,                 // số VĐV dự kiến
   teamCount: 4,
   courtCount: 5,
-  matchTotal: 40,                   // số khung trận tạo sẵn (8 lượt × 5 sân)
-  matchRange: '36–40',              // hiển thị trên website
-  matchesPerTeam: 20
+  matchTotal: 50                    // 10 lượt × 5 sân
 };
+const MATCHES_PER_TEAM = Math.round((EVENT.matchTotal * 2) / EVENT.teamCount);
 
 const MAPS_URL = 'https://www.google.com/maps/search/?api=1&query=' +
   encodeURIComponent(`${EVENT.venue}, ${EVENT.address}`);
+
+const pad = n => String(n).padStart(2, '0');
 
 const LEVELS = ['A', 'B', 'C', 'D', 'E'];
 const SLOTS_PER_LEVEL = EVENT.playerTarget / LEVELS.length;
@@ -47,16 +59,20 @@ const NAV = [
 const TIMELINE = [
   ['06:30', 'Chuẩn bị', 'Chuẩn bị hậu cần', 'Ban Tổ chức chuẩn bị sân bãi và dụng cụ.'],
   ['07:00', 'Khai mạc', 'Check-in, khai mạc và phổ biến thể lệ', 'Ổn định đội hình, phổ biến quy định thi đấu.'],
-  ['07:15', 'Vòng tròn', 'Thi đấu vòng tròn', `Bốn đội đấu vòng tròn trên ${EVENT.courtCount} sân, khoảng ${EVENT.matchRange} trận.`],
-  ['09:45', 'Xếp hạng', 'Thi đấu xếp hạng', 'Hạng 1 gặp hạng 2; hạng 3 gặp hạng 4.'],
-  ['10:45', 'Trao giải', 'Trao giải và chụp ảnh', 'Dự kiến kết thúc chương trình lúc 11:00.']
+  ['07:15', 'Vòng tròn', 'Thi đấu vòng tròn', `Bốn đội đấu vòng tròn trên ${EVENT.courtCount} sân, tổng ${EVENT.matchTotal} trận (${ROUNDS} lượt).`],
+  ['10:45', 'Xếp hạng', 'Thi đấu xếp hạng', 'Hạng 1 gặp hạng 2; hạng 3 gặp hạng 4.'],
+  ['11:20', 'Lucky draw', 'Bốc thăm may mắn', 'Lucky draw vào cuối chương trình.'],
+  ['11:40', 'Trao giải', 'Trao giải và chụp ảnh', 'Dự kiến kết thúc chương trình lúc 12:00.']
 ];
 
 const PRIZES = [
-  { rank: 'Giải Nhất', amount: '4.000.000đ', reward: 'Cúp vô địch', cls: 'first' },
-  { rank: 'Giải Nhì', amount: '3.000.000đ', reward: 'Huy chương', cls: 'second' },
-  { rank: 'Giải Ba', amount: '2.000.000đ', reward: 'Huy chương', cls: 'third' },
-  { rank: 'Giải Fair Play', amount: '1.000.000đ', reward: 'Tinh thần thi đấu đẹp', cls: 'fair' }
+  { rank: 'Giải Nhất', amount: '4.000.000đ', reward: 'Cúp vô địch + Huy chương vàng', cls: 'first' },
+  { rank: 'Giải Nhì', amount: '3.000.000đ', reward: 'Huy chương bạc', cls: 'second' },
+  { rank: 'Giải Ba', amount: '2.000.000đ', reward: 'Huy chương đồng', cls: 'third' }
+];
+const SIDE_PRIZES = [
+  { title: 'Giải Fair Play', amount: '1.000.000đ', note: 'Vinh danh tinh thần thi đấu đẹp', Icon: HeartHandshake },
+  { title: 'Giải Phong cách', amount: '', note: 'Giá trị giải sẽ được công bố', Icon: Shirt }
 ];
 
 const RULES = [
@@ -71,8 +87,19 @@ const RULES = [
   {
     title: 'Thể thức vòng tròn',
     body: (
-      <p>{EVENT.teamCount} đội đấu vòng tròn, tổng khoảng {EVENT.matchRange} trận; mỗi đội đấu khoảng {EVENT.matchesPerTeam} trận.
+      <p>{EVENT.teamCount} đội đấu vòng tròn, tổng {EVENT.matchTotal} trận; mỗi đội đấu khoảng {MATCHES_PER_TEAM} trận.
         {' '}{EVENT.courtCount} sân thi đấu song song, mỗi lượt {EVENT.courtCount} trận.</p>
+    )
+  },
+  {
+    title: 'Nội dung giao đấu',
+    body: (
+      <>
+        <p>Thi đấu đồng đội. Mỗi lần hai đội gặp nhau gồm 4 nội dung:</p>
+        <ul className="chips-static">
+          <li>2 trận đôi nam</li><li>1 trận đôi nữ</li><li>1 trận đôi nam nữ</li>
+        </ul>
+      </>
     )
   },
   {
@@ -82,7 +109,7 @@ const RULES = [
         <p>Mỗi trận có một mã duy nhất. Ví dụ <b>M17</b> là trận thứ 17, thuộc <b>Lượt 4</b>, đấu ở <b>Sân 2</b>
           {' '}(công thức: số trận = (lượt − 1) × {EVENT.courtCount} + sân).</p>
         <ul className="chips-static">
-          <li>Mã trận M01–M{String(EVENT.matchTotal).padStart(2, '0')}</li>
+          <li>Mã trận M01–M{pad(EVENT.matchTotal)}</li>
           <li>Mã sân S1–S{EVENT.courtCount}</li>
           <li>Lượt L1–L{ROUNDS}</li>
         </ul>
@@ -95,15 +122,13 @@ const RULES = [
   },
   {
     title: 'Tranh hạng',
-    body: <p>Sau vòng tròn, hạng 1 và hạng 2 tranh Nhất/Nhì; hạng 3 và hạng 4 tranh Ba/Tư. Giải Fair Play do Ban Tổ chức bình chọn tại sân.</p>
+    body: <p>Sau vòng tròn, hạng 1 và hạng 2 tranh Nhất/Nhì; hạng 3 và hạng 4 tranh Ba/Tư.</p>
   }
 ];
 
 /* ------------------------------------------------------------------ *
  *  2. DỮ LIỆU MẶC ĐỊNH (có thể thay bằng file Excel ở Khu vực BTC)
  * ------------------------------------------------------------------ */
-const pad = n => String(n).padStart(2, '0');
-
 // Khung 40 trận: M = (lượt − 1) × 5 + sân. Chưa bốc thăm nên chưa có tên đội.
 const DEFAULT_MATCHES = Array.from({ length: EVENT.matchTotal }, (_, i) => ({
   'Mã trận': 'M' + pad(i + 1),
@@ -132,7 +157,7 @@ const PLAYER_COLS = ['Trình', 'Họ tên', 'Phòng ban', 'Đội'];
 /* ------------------------------------------------------------------ *
  *  3. HÀM TIỆN ÍCH
  * ------------------------------------------------------------------ */
-const KEYS = { matches: 'siopen_matches_v3', players: 'siopen_players_v3' };
+const KEYS = { matches: 'siopen_matches_v4', players: 'siopen_players_v4' };
 const readSaved = (key, fallback) => {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
 };
@@ -270,7 +295,7 @@ function Header({ active }) {
             <a key={id} href={'#' + id} className={active === id ? 'is-active' : ''}
                aria-current={active === id ? 'true' : undefined} onClick={close}>{label}</a>
           ))}
-          <a className="btn btn-accent nav-cta" href="#lich" onClick={close}>Tra cứu trận <ArrowUpRight size={16} aria-hidden="true" /></a>
+          <a className="btn btn-accent nav-cta" href="#dang-ky" onClick={close}>Đăng ký ngay <ArrowUpRight size={16} aria-hidden="true" /></a>
         </nav>
         <button className="menu-toggle" type="button" aria-expanded={open} aria-controls="main-nav"
                 aria-label={open ? 'Đóng menu' : 'Mở menu'} onClick={() => setOpen(o => !o)}>
@@ -288,10 +313,10 @@ function CourtArt() {
   return (
     <div className="court-wrap">
       <svg className="court" viewBox="0 0 260 520" role="img" aria-label="Sân pickleball nhìn từ trên xuống, quả bóng bay qua lưới">
-        <rect width="260" height="520" rx="16" fill="#0c1630" />
-        <rect x="30" y="40" width="200" height="440" fill="#24437f" />
-        <rect x="30" y="190" width="200" height="70" fill="#ff7448" />
-        <rect x="30" y="260" width="200" height="70" fill="#ff7448" />
+        <rect width="260" height="520" rx="16" fill="#2ec27e" />
+        <rect x="30" y="40" width="200" height="440" fill="#1456d6" />
+        <rect x="30" y="190" width="200" height="70" fill="#4bc8e8" />
+        <rect x="30" y="260" width="200" height="70" fill="#4bc8e8" />
         <g fill="none" stroke="#f5f4ef" strokeWidth="3">
           <rect x="30" y="40" width="200" height="440" />
           <line x1="30" y1="190" x2="230" y2="190" />
@@ -307,9 +332,9 @@ function CourtArt() {
         <circle cx="246" cy="260" r="6" fill="#fff" />
         <path d={ballPath} fill="none" stroke="#f5f4ef" strokeOpacity=".55" strokeWidth="2" strokeDasharray="3 7" />
         <g>
-          <circle r="11" fill="#ecf24b" stroke="#111b35" strokeWidth="1.5" />
-          <circle cx="-3" cy="-3" r="1.6" fill="#111b35" /><circle cx="3" cy="-2" r="1.6" fill="#111b35" />
-          <circle cx="-1" cy="3" r="1.6" fill="#111b35" /><circle cx="4" cy="4" r="1.6" fill="#111b35" />
+          <circle r="11" fill="#fef027" stroke="#0a1f6e" strokeWidth="1.5" />
+          <circle cx="-3" cy="-3" r="1.6" fill="#0a1f6e" /><circle cx="3" cy="-2" r="1.6" fill="#0a1f6e" />
+          <circle cx="-1" cy="3" r="1.6" fill="#0a1f6e" /><circle cx="4" cy="4" r="1.6" fill="#0a1f6e" />
           {still
             ? <animateTransform attributeName="transform" type="translate" values="190 96" dur="1s" fill="freeze" />
             : <animateMotion dur="2.8s" repeatCount="indefinite" path={ballPath} keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.4 0 0.2 1" />}
@@ -335,7 +360,7 @@ function Timeline() {
   return (
     <section className="section section--paper" id="lich-trinh">
       <div className="container">
-        <SectionHead title="Từ khai mạc đến trao giải" lead="Khung giờ theo proposal tổ chức giải, kéo dài khoảng bốn tiếng rưỡi." />
+        <SectionHead title="Từ khai mạc đến trao giải" lead="Khung giờ dự kiến, từ 06:30 đến 12:00. Ban Tổ chức có thể điều chỉnh nhẹ trước ngày thi đấu." />
         <ol className="timeline">
           {TIMELINE.map(([time, tag, title, text]) => (
             <li className="tl-item" key={time}>
@@ -393,11 +418,11 @@ function Hero() {
       <div className="container hero-grid">
         <div className="hero-copy">
           <p className="hero-org">MSB · Strategy &amp; Innovation</p>
-          <h1><span>Pickleball</span><span>SI Open</span><span>2026</span></h1>
-          <p className="hero-tag">Thể thao · Kết nối · Gắn kết</p>
-          <p className="hero-lead">{EVENT.playerTarget} vận động viên, {EVENT.teamCount} đội và {EVENT.courtCount} sân thi đấu song song: một buổi sáng thứ Bảy để cả Khối SI đứng chung một sân.</p>
+          <h1><span>Pickleball</span><span className="h1-band">SI Open 2026</span></h1>
+          <p className="hero-tag">Bứt phá giới hạn – Gắn kết thành công</p>
+          <p className="hero-lead">{EVENT.playerTarget} vận động viên, {EVENT.teamCount} đội, {EVENT.courtCount} sân thi đấu song song và cả Khối SI cùng đến cổ vũ. Một buổi sáng thứ Bảy thật vui.</p>
           <div className="hero-actions">
-            <a className="btn btn-accent" href="#doi-thi">Xem suất tham gia <ArrowUpRight size={18} aria-hidden="true" /></a>
+            <a className="btn btn-accent" href="#dang-ky">Đăng ký ngay <ArrowUpRight size={18} aria-hidden="true" /></a>
             <a className="btn btn-ghost" href="#lich">Lịch thi đấu</a>
           </div>
           {cd && !cd.done && (
@@ -412,11 +437,51 @@ function Hero() {
       </div>
       <div className="facts-band">
         <dl className="container facts">
-          <div><span className="fact-icon"><CalendarDays size={20} aria-hidden="true" /></span><div><dt>Thời gian</dt><dd>{EVENT.dateLabel} · {EVENT.timeLabel}</dd></div></div>
-          <div><span className="fact-icon"><Users size={20} aria-hidden="true" /></span><div><dt>Thể thức</dt><dd>{EVENT.teamCount} đội · {EVENT.playerTarget} VĐV<small>{EVENT.courtCount} sân · {EVENT.matchRange} trận</small></dd></div></div>
+          <div><span className="fact-icon"><CalendarDays size={20} aria-hidden="true" /></span><div><dt>Thời gian</dt><dd>{EVENT.dateLabel}<small>{EVENT.timeLabel}</small></dd></div></div>
+          <div><span className="fact-icon"><Users size={20} aria-hidden="true" /></span><div><dt>Thể thức</dt><dd>{EVENT.teamCount} đội · {EVENT.playerTarget} VĐV<small>{EVENT.courtCount} sân · {EVENT.matchTotal} trận</small></dd></div></div>
           <div><span className="fact-icon"><MapPin size={20} aria-hidden="true" /></span><div><dt>Địa điểm</dt><dd><a href={MAPS_URL} target="_blank" rel="noopener noreferrer">{EVENT.venue}</a><small>{EVENT.address}</small></dd></div></div>
           <div><span className="fact-icon"><Trophy size={20} aria-hidden="true" /></span><div><dt>Tổng giải thưởng</dt><dd>{EVENT.prizeTotal}</dd></div></div>
         </dl>
+      </div>
+    </section>
+  );
+}
+
+function Register({ registered }) {
+  const left = Math.max(0, EVENT.playerTarget - registered);
+  return (
+    <section className="register" id="dang-ky">
+      <div className="container register-grid">
+        <div>
+          <h2>Quét QR, giữ ngay suất thi đấu</h2>
+          <p>Còn <b>{left}</b> trong {EVENT.playerTarget} suất. Anh/chị/em đăng ký sớm nhé!</p>
+          {EVENT.registerDeadline && <p className="register-deadline">Hạn chót đăng ký: <b>{EVENT.registerDeadline}</b></p>}
+          <div className="register-actions">
+            <a className="btn btn-dark" href={EVENT.registerUrl} target="_blank" rel="noopener noreferrer">Đăng ký ngay <ArrowUpRight size={18} aria-hidden="true" /></a>
+            <a className="btn btn-line" href="#doi-thi">Xem danh sách đã đăng ký</a>
+          </div>
+        </div>
+        <figure className="qr">
+          <img src={qrImage} width="260" height="255" alt="Mã QR đăng ký tham gia giải Pickleball Khối SI 2026" />
+          <figcaption>Quét bằng camera điện thoại</figcaption>
+        </figure>
+      </div>
+    </section>
+  );
+}
+
+function Cheer() {
+  return (
+    <section className="cheer" id="co-vu">
+      <div className="container cheer-grid">
+        <div>
+          <h2>Đến thật đông, cổ vũ thật to!</h2>
+          <p>Giải của cả Khối SI. Ai thi đấu thì đăng ký, ai chưa thi đấu thì đến sân cổ vũ đồng đội. Một tràng pháo tay cũng là cả một trận thắng.</p>
+        </div>
+        <div className="cheer-tiles">
+          <div className="cheer-tile"><Users size={28} aria-hidden="true" /><div><h3>Thi đấu</h3><p>Quét mã QR ở phía trên để đăng ký suất thi đấu.</p></div></div>
+          <div className="cheer-tile"><Megaphone size={28} aria-hidden="true" /><div><h3>Cổ vũ</h3><p>Đến {EVENT.venue}, {EVENT.dateLabel}, {EVENT.timeLabel} để tiếp lửa cho đồng đội.</p></div></div>
+        </div>
       </div>
     </section>
   );
@@ -666,7 +731,7 @@ function Standings({ standings, teams, matches }) {
                     <tr key={r.team} className={i < 2 ? 'row-top' : 'row-low'}>
                       <td className="rank">{anyPlayed ? i + 1 : '–'}</td>
                       <th scope="row"><span className="t-name">{r.team}</span></th>
-                      <td className="num">{r.p}<span className="of">/{EVENT.matchesPerTeam}</span></td>
+                      <td className="num">{r.p}<span className="of">/{MATCHES_PER_TEAM}</span></td>
                       <td className="num">{r.w}</td><td className="num">{r.l}</td>
                       <td className="num">{r.sf}–{r.sa}</td>
                       <td className="num">{r.sf - r.sa > 0 ? '+' : ''}{r.sf - r.sa}</td>
@@ -776,16 +841,28 @@ function Awards() {
     <section className="awards" id="giai-thuong">
       <div className="container">
         <SectionHead title="Vinh danh những nỗ lực"
-          lead={`Tổng giá trị giải thưởng ${EVENT.prizeTotal}, gồm ba giải thứ hạng và một giải Fair Play.`} />
+          lead={`Tổng giá trị giải thưởng ${EVENT.prizeTotal}, gồm ba giải thứ hạng, các giải phụ và lucky draw cuối chương trình.`} />
         <div className="podium">
           {PRIZES.map(p => (
             <article className={'bar bar--' + p.cls} key={p.rank}>
-              {p.cls === 'fair' && <HeartHandshake size={26} aria-hidden="true" />}
               <h3>{p.rank}</h3>
               <strong>{p.amount}</strong>
               <span>{p.reward}</span>
             </article>
           ))}
+        </div>
+        <h3 className="extras-title">Giải phụ và lucky draw</h3>
+        <div className="extras">
+          {SIDE_PRIZES.map(({ title, amount, note, Icon }) => (
+            <article className="extra" key={title}>
+              <Icon size={30} aria-hidden="true" />
+              <div><h4>{title}</h4>{amount && <strong>{amount}</strong>}<span>{note}</span></div>
+            </article>
+          ))}
+          <article className="extra extra--lucky">
+            <Gift size={30} aria-hidden="true" />
+            <div><h4>Lucky draw</h4><strong>Cuối chương trình</strong><span>Bốc thăm may mắn, danh sách quà tặng sẽ được công bố sau.</span></div>
+          </article>
         </div>
       </div>
     </section>
@@ -799,7 +876,10 @@ function Closing() {
         <h2>Hẹn gặp tại sân.</h2>
         <p>{EVENT.dateLabel} · {EVENT.timeLabel}<br />
           <a href={MAPS_URL} target="_blank" rel="noopener noreferrer">{EVENT.venue}, {EVENT.address}</a></p>
-        <a className="btn btn-accent" href="#lich">Tìm trận của bạn <ArrowUpRight size={18} aria-hidden="true" /></a>
+        <div className="closing-actions">
+          <a className="btn btn-accent" href="#dang-ky">Đăng ký ngay <ArrowUpRight size={18} aria-hidden="true" /></a>
+          <a className="btn btn-ghost" href="#lich">Tìm trận của bạn</a>
+        </div>
       </div>
     </section>
   );
@@ -919,6 +999,7 @@ function App() {
       <Header active={active} />
       <main>
         <Hero />
+        <Register registered={players.length} />
         <Players players={players} />
         <Timeline />
         <MatchCenter matches={matches} onOpenAdmin={openAdmin} />
@@ -926,6 +1007,7 @@ function App() {
         <Bracket matches={matches} standings={standings} />
         <Rules />
         <Awards />
+        <Cheer />
         <Closing />
         {adminOpen && <Admin matches={matches} players={players} onClose={() => setAdminOpen(false)} onApply={apply} onReset={reset} />}
       </main>
