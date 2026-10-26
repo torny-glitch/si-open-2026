@@ -146,13 +146,14 @@ const DEFAULT_PLAYERS = [
   // 5 đội trưởng = 5 người Trình A (số đội tạm theo thứ tự cũ, chỉnh ở đây nếu cần)
   P('A', 'Nguyễn Vũ Hải', 'DC Ops', 'Đội 2'), P('A', 'Lê Trọng Tú', 'Agile', 'Đội 4'),
   P('A', 'Phan Khánh Toàn', 'Loyalty', 'Đội 3'), P('A', 'Nguyễn Hữu Nghị', 'DigiLenO', 'Đội 1'),
-  P('A', 'Hiếu DC', 'DC', 'Đội 5'),
+  P('A', 'Trần Trung Hiếu', 'DC', 'Đội 5'),
   P('B', 'Nguyễn Mạnh Tuấn', 'Squad CMB - dự án Digi Leno'), P('B', 'Trần Trung Anh', 'DC'),
   P('B', 'Nguyễn Thanh Sơn', 'DC'), P('B', 'Nguyễn Hai Long', 'DC Ops'), P('B', 'Hà Duyên Tiến', 'UC EB'),
   P('C', 'Nghiêm An Việt', 'DigiLenO'), P('C', 'Lê Thanh Tuấn', 'PMO / dự án DigilenO'),
   P('C', 'Nguyễn Duy Minh Vũ', 'CM'), P('C', 'Đinh Anh Tú', 'DC'), P('C', 'Chu Mạnh Quang', 'AI'),
-  P('D', 'Chị Thúy'), P('D', 'Phạm Thị Bích Nga', 'UC RB'), P('D', 'Hoàng Bích Phượng', 'Loyalty'),
+  P('D', 'Hà Thị Phương Thúy', 'Loyalty'), P('D', 'Phạm Thị Bích Nga', 'UC RB'), P('D', 'Hoàng Bích Phượng', 'Loyalty'),
   P('D', 'Nguyễn Hương Lan', 'DigiLenO'), P('D', 'Vũ Thị Vân Anh', 'UCSL - UCRB'),
+  P('D', 'Lê Cường', 'DC'), P('D', 'Nguyễn Thị Loan', 'AI'),
   P('E', 'Lưu Lệ Chi', 'PGĐK'), P('E', 'Bùi Minh Phương', 'UC EB'), P('E', 'Nguyễn Quốc Minh Nhật', 'SI DC'),
   P('E', 'Nguyễn Ngọc Toàn', 'CM'), P('E', 'Hoàng Thị Thu Trang', 'Chiến lược')
 ];
