@@ -263,12 +263,19 @@ a { color: inherit; }
 .level-list .is-empty { border: 1.5px dashed var(--line-strong); color: var(--muted); font-size: 13.5px; }
 .level-list .is-empty span { grid-column: 2; }
 
-.teams-strip { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line-strong); display: grid; grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); gap: 24px 40px; align-items: start; }
-.team-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 12px; }
-.tcard { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--paper); border: 1px dashed var(--line-strong); border-radius: var(--radius); }
+.teams-strip { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line-strong); display: grid; grid-template-columns: 1fr; gap: 20px; }
+.team-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; align-items: stretch; }
+.tcard { display: flex; flex-direction: column; gap: 10px; padding: 16px; background: var(--paper); border: 1px solid var(--line); border-top: 4px solid var(--blue); border-radius: var(--radius); }
+.tcard header { display: flex; align-items: baseline; gap: 8px; }
+.tcard h4 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 26px; line-height: 1.2; }
 .team-no { font-family: var(--font-display); font-weight: 800; font-size: 44px; line-height: 1; color: var(--blue); }
-.tcard strong { display: block; font-size: 16px; }
-.tcard span:not(.team-no) { font-size: 13.5px; color: var(--muted); }
+.tcap { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px 12px; border-radius: 8px; background: var(--navy); color: #fff; font-size: 15px; font-weight: 600; line-height: 1.3; }
+.tcap small { font-size: 12px; font-weight: 400; color: var(--on-dark); }
+.badge { padding: 2px 10px; border-radius: 999px; background: var(--yellow); color: var(--navy); font-size: 12px; font-weight: 700; }
+.tmembers { font-size: 13.5px; color: var(--muted); }
+.tmembers b { color: var(--ink); }
+.tlist { display: grid; gap: 4px; font-size: 14px; }
+.tlist li { padding-top: 4px; border-top: 1px solid var(--line); }
 @media (max-width: 900px) { .teams-strip { grid-template-columns: 1fr; } }
 
 /* ---------- Chương trình ---------- */
@@ -345,11 +352,13 @@ a { color: inherit; }
 .t-sub { display: block; font-size: 13px; color: var(--muted); white-space: nowrap; }
 .row-top { box-shadow: inset 4px 0 0 var(--green); }
 .row-low { box-shadow: inset 4px 0 0 var(--line-strong); }
+.row-out { box-shadow: inset 4px 0 0 transparent; color: var(--muted); }
 
 .legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 14px; font-size: 14px; color: var(--muted); }
 .dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: -6px; }
 .dot--top { background: var(--green); }
 .dot--low { background: var(--line-strong); }
+.dot--out { background: transparent; box-shadow: inset 0 0 0 2px var(--line-strong); }
 
 .subhead { font-family: var(--font-display); font-weight: 700; font-size: 30px; line-height: 1.2; }
 .subnote { margin: 6px 0 16px; max-width: 52ch; color: var(--muted); font-size: 15px; }
