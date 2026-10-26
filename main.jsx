@@ -30,10 +30,11 @@ const EVENT = {
   registerDeadline: '',             // ví dụ: '17:00, 12.11.2026' — để trống thì không hiển thị
   prizeTotal: '10.000.000đ',
   playerTarget: 50,                 // số VĐV dự kiến
-  teamCount: 4,
+  teamCount: 5,                     // mỗi đội 1 đội trưởng + 9 thành viên
   courtCount: 5,
   matchTotal: 50                    // 10 lượt × 5 sân
 };
+const TEAM_SIZE = EVENT.playerTarget / EVENT.teamCount;   // 10 người gồm cả đội trưởng
 const MATCHES_PER_TEAM = Math.round((EVENT.matchTotal * 2) / EVENT.teamCount);
 
 const MAPS_URL = 'https://www.google.com/maps/search/?api=1&query=' +
@@ -59,7 +60,7 @@ const NAV = [
 const TIMELINE = [
   ['06:30', 'Chuẩn bị', 'Chuẩn bị hậu cần', 'Ban Tổ chức chuẩn bị sân bãi và dụng cụ.'],
   ['07:00', 'Khai mạc', 'Check-in, khai mạc và phổ biến thể lệ', 'Ổn định đội hình, phổ biến quy định thi đấu.'],
-  ['07:15', 'Vòng tròn', 'Thi đấu vòng tròn', `Bốn đội đấu vòng tròn trên ${EVENT.courtCount} sân, tổng ${EVENT.matchTotal} trận (${ROUNDS} lượt).`],
+  ['07:15', 'Vòng tròn', 'Thi đấu vòng tròn', `${EVENT.teamCount} đội đấu vòng tròn trên ${EVENT.courtCount} sân, tổng ${EVENT.matchTotal} trận (${ROUNDS} lượt).`],
   ['10:45', 'Xếp hạng', 'Thi đấu xếp hạng', 'Hạng 1 gặp hạng 2; hạng 3 gặp hạng 4.'],
   ['11:20', 'Lucky draw', 'Bốc thăm may mắn', 'Lucky draw vào cuối chương trình.'],
   ['11:40', 'Trao giải', 'Trao giải và chụp ảnh', 'Dự kiến kết thúc chương trình lúc 12:00.']
@@ -80,8 +81,8 @@ const RULES = [
     title: 'Thành phần đội',
     body: (
       <p>Dự kiến {EVENT.playerTarget} vận động viên, chia thành {LEVELS.length} trình ({LEVELS[0]}–{LEVELS[LEVELS.length - 1]}),
-        mỗi trình {SLOTS_PER_LEVEL} suất. Khi đủ danh sách, Ban Tổ chức chia vận động viên vào {EVENT.teamCount} đội
-        bằng hình thức bốc thăm.</p>
+        mỗi trình {SLOTS_PER_LEVEL} suất. Chia thành {EVENT.teamCount} đội, mỗi đội gồm 1 đội trưởng và {TEAM_SIZE - 1} thành viên.
+        {EVENT.teamCount} đội trưởng là {EVENT.teamCount} vận động viên Trình A. Danh sách thành viên từng đội sẽ được công bố sau khi chia đội.</p>
     )
   },
   {
@@ -95,9 +96,9 @@ const RULES = [
     title: 'Nội dung giao đấu',
     body: (
       <>
-        <p>Thi đấu đồng đội. Mỗi lần hai đội gặp nhau gồm 4 nội dung:</p>
+        <p>Thi đấu đồng đội. Mỗi lần hai đội gặp nhau có các nội dung:</p>
         <ul className="chips-static">
-          <li>2 trận đôi nam</li><li>1 trận đôi nữ</li><li>1 trận đôi nam nữ</li>
+          <li>Đôi nam</li><li>Đôi nữ</li><li>Đôi nam nữ</li>
         </ul>
       </>
     )
@@ -138,26 +139,31 @@ const DEFAULT_MATCHES = Array.from({ length: EVENT.matchTotal }, (_, i) => ({
   'Đội 1': '', 'Đội 2': '', 'Tỉ số': '', 'Trạng thái': 'Dự kiến'
 }));
 
-const P = (level, name, dept = '') => ({ 'Trình': level, 'Họ tên': name, 'Phòng ban': dept, 'Đội': '' });
+const P = (level, name, dept = '', team = '') => ({
+  'Trình': level, 'Họ tên': name, 'Phòng ban': dept, 'Vai trò': team ? 'Đội trưởng' : '', 'Đội': team
+});
 const DEFAULT_PLAYERS = [
-  P('A', 'Nguyễn Vũ Hải', 'DC Ops'), P('A', 'Lê Trọng Tú', 'Agile'), P('A', 'Phan Khánh Toàn', 'Loyalty'),
-  P('A', 'Nguyễn Hữu Nghị', 'DigiLenO'), P('A', 'Hiếu DC', 'DC'),
+  // 5 đội trưởng = 5 người Trình A (số đội tạm theo thứ tự cũ, chỉnh ở đây nếu cần)
+  P('A', 'Nguyễn Vũ Hải', 'DC Ops', 'Đội 2'), P('A', 'Lê Trọng Tú', 'Agile', 'Đội 4'),
+  P('A', 'Phan Khánh Toàn', 'Loyalty', 'Đội 3'), P('A', 'Nguyễn Hữu Nghị', 'DigiLenO', 'Đội 1'),
+  P('A', 'Hiếu DC', 'DC', 'Đội 5'),
   P('B', 'Nguyễn Mạnh Tuấn', 'Squad CMB - dự án Digi Leno'), P('B', 'Trần Trung Anh', 'DC'),
   P('B', 'Nguyễn Thanh Sơn', 'DC'), P('B', 'Nguyễn Hai Long', 'DC Ops'), P('B', 'Hà Duyên Tiến', 'UC EB'),
   P('C', 'Nghiêm An Việt', 'DigiLenO'), P('C', 'Lê Thanh Tuấn', 'PMO / dự án DigilenO'),
   P('C', 'Nguyễn Duy Minh Vũ', 'CM'), P('C', 'Đinh Anh Tú', 'DC'), P('C', 'Chu Mạnh Quang', 'AI'),
   P('D', 'Chị Thúy'), P('D', 'Phạm Thị Bích Nga', 'UC RB'), P('D', 'Hoàng Bích Phượng', 'Loyalty'),
   P('D', 'Nguyễn Hương Lan', 'DigiLenO'), P('D', 'Vũ Thị Vân Anh', 'UCSL - UCRB'),
-  P('E', 'Lưu Lệ Chi', 'PGĐK'), P('E', 'Bùi Minh Phương', 'UC EB'), P('E', 'Nguyễn Quốc Minh Nhật', 'SI DC')
+  P('E', 'Lưu Lệ Chi', 'PGĐK'), P('E', 'Bùi Minh Phương', 'UC EB'), P('E', 'Nguyễn Quốc Minh Nhật', 'SI DC'),
+  P('E', 'Nguyễn Ngọc Toàn', 'CM'), P('E', 'Hoàng Thị Thu Trang', 'Chiến lược')
 ];
 
 const MATCH_COLS = ['Mã trận', 'Lượt', 'Mã sân', 'Nội dung', 'Vòng', 'Giờ', 'Đội 1', 'Đội 2', 'Tỉ số', 'Trạng thái'];
-const PLAYER_COLS = ['Trình', 'Họ tên', 'Phòng ban', 'Đội'];
+const PLAYER_COLS = ['Trình', 'Họ tên', 'Phòng ban', 'Vai trò', 'Đội'];
 
 /* ------------------------------------------------------------------ *
  *  3. HÀM TIỆN ÍCH
  * ------------------------------------------------------------------ */
-const KEYS = { matches: 'siopen_matches_v4', players: 'siopen_players_v4' };
+const KEYS = { matches: 'siopen_matches_v5', players: 'siopen_players_v5' };
 const readSaved = (key, fallback) => {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
 };
@@ -176,6 +182,7 @@ const parseScore = s => {
 };
 const FINAL_RE = /tranh nhất|nhất\s*\/\s*nhì|chung kết/i;
 const THIRD_RE = /tranh ba|ba\s*\/\s*tư|hạng ba/i;
+const isCaptain = p => p['Vai trò'] === 'Đội trưởng';
 const isPlayoff = x => FINAL_RE.test(x['Vòng'] || '') || THIRD_RE.test(x['Vòng'] || '') || /xếp hạng|playoff/i.test(x['Vòng'] || '');
 
 const courtOf = x => String(x['Mã sân'] || x['Sân'] || '').trim();
@@ -496,7 +503,6 @@ function Players({ players }) {
   }, [players]);
   const registered = players.length;
   const percent = Math.min(100, Math.round((registered / EVENT.playerTarget) * 100));
-  const assignedTeams = players.some(p => p['Đội']);
 
   return (
     <section className="section" id="doi-thi">
@@ -549,22 +555,26 @@ function Players({ players }) {
           <div>
             <h3 className="subhead">Chia đội</h3>
             <p className="subnote">
-              {assignedTeams
-                ? `${EVENT.teamCount} đội thi đấu theo kết quả bốc thăm của Ban Tổ chức.`
-                : `Khi đủ ${EVENT.playerTarget} vận động viên, Ban Tổ chức sẽ chia vào ${EVENT.teamCount} đội. Danh sách từng đội được công bố sau bốc thăm.`}
+              {EVENT.teamCount} đội, mỗi đội gồm 1 đội trưởng và {TEAM_SIZE - 1} thành viên. Đội trưởng là {EVENT.teamCount} vận động viên Trình A;
+              thành viên từng đội sẽ được công bố sau khi chia đội.
             </p>
           </div>
           <div className="team-cards">
             {TEAMS.map((t, i) => {
-              const members = players.filter(p => p['Đội'] === t);
+              const all = players.filter(p => p['Đội'] === t);
+              const cap = all.find(isCaptain);
+              const members = all.filter(p => p !== cap);
               return (
-                <div className="tcard" key={t}>
-                  <span className="team-no" aria-hidden="true">{i + 1}</span>
-                  <div>
-                    <strong>{t}</strong>
-                    <span>{members.length ? members.map(m => m['Họ tên']).join(', ') : 'Chờ bốc thăm'}</span>
-                  </div>
-                </div>
+                <article className="tcard" key={t}>
+                  <header><span className="team-no" aria-hidden="true">{i + 1}</span><h4>{t}</h4></header>
+                  <p className="tcap">
+                    <span className="badge">Đội trưởng</span>
+                    {cap ? cap['Họ tên'] : 'Chưa xác định'}
+                    {cap && cap['Phòng ban'] && <small>{cap['Phòng ban']}</small>}
+                  </p>
+                  <p className="tmembers"><b>{members.length}/{TEAM_SIZE - 1}</b> thành viên{members.length === 0 ? ' · chờ chia đội' : ''}</p>
+                  {members.length > 0 && <ul className="tlist">{members.map((m, k) => <li key={m['Họ tên'] + k}>{m['Họ tên']}</li>)}</ul>}
+                </article>
               );
             })}
           </div>
@@ -728,7 +738,7 @@ function Standings({ standings, teams, matches }) {
                 </thead>
                 <tbody>
                   {standings.map((r, i) => (
-                    <tr key={r.team} className={i < 2 ? 'row-top' : 'row-low'}>
+                    <tr key={r.team} className={i < 2 ? 'row-top' : i < 4 ? 'row-low' : 'row-out'}>
                       <td className="rank">{anyPlayed ? i + 1 : '–'}</td>
                       <th scope="row"><span className="t-name">{r.team}</span></th>
                       <td className="num">{r.p}<span className="of">/{MATCHES_PER_TEAM}</span></td>
@@ -740,7 +750,7 @@ function Standings({ standings, teams, matches }) {
                 </tbody>
               </table>
             </div>
-            <p className="legend"><i className="dot dot--top" /> Hạng 1–2 tranh Nhất/Nhì <i className="dot dot--low" /> Hạng 3–4 tranh Ba/Tư</p>
+            <p className="legend"><i className="dot dot--top" /> Hạng 1–2 tranh Nhất/Nhì <i className="dot dot--low" /> Hạng 3–4 tranh Ba/Tư <i className="dot dot--out" /> Hạng 5 dừng ở vòng tròn</p>
           </div>
 
           <div>
@@ -927,7 +937,7 @@ function Admin({ matches, players, onClose, onApply, onReset }) {
           <h2>Khu vực Ban Tổ chức</h2>
           <button type="button" className="icon-btn" onClick={onClose} aria-label="Đóng khu vực Ban Tổ chức"><X size={20} /></button>
         </div>
-        <p className="admin-lead">Tải file mẫu về, điền tiếp rồi tải lên. Sheet <b>“Vận động viên”</b> gồm cột Trình (A–E), Họ tên, Phòng ban và Đội (để trống tới khi bốc thăm).
+        <p className="admin-lead">Tải file mẫu về, điền tiếp rồi tải lên. Sheet <b>“Vận động viên”</b> gồm cột Trình (A–E), Họ tên, Phòng ban, Vai trò (ghi <b>Đội trưởng</b> cho 5 đội trưởng) và Đội (Đội 1–Đội 5, để trống tới khi chia đội).
           Sheet <b>“Lịch thi đấu”</b> đã có sẵn {EVENT.matchTotal} mã trận, lượt và sân; chỉ cần điền Đội 1, Đội 2, Giờ, Tỉ số, Trạng thái.
           Nhập tỉ số dạng <b>11-8</b> và đặt định dạng ô là Text để Excel không tự đổi thành ngày.</p>
 

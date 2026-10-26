@@ -31,7 +31,7 @@ Mở `src/main.jsx`, sửa khối `EVENT` ở đầu file: ngày, giờ, địa 
 hạn chót (`registerDeadline`, để trống thì không hiển thị), số VĐV, số sân, số trận.
 Điền `startISO` để bật đồng hồ đếm ngược (để `''` nếu muốn tắt).
 
-Danh sách VĐV: sửa `DEFAULT_PLAYERS` (cột Trình A–E, Họ tên, Phòng ban, Đội).
+Danh sách VĐV: sửa `DEFAULT_PLAYERS` (Trình A–E, Họ tên, Phòng ban, Vai trò, Đội). 5 đội trưởng là 5 người Trình A.
 Lịch thi đấu: mã trận M01–M50 = (lượt − 1) × 5 + sân. Điền tên đội, giờ, tỉ số vào `DEFAULT_MATCHES`
 hoặc dùng **Khu vực BTC** (liên kết ở chân trang) để nạp file Excel hai sheet `Lịch thi đấu` và `Vận động viên`.
 Bảng xếp hạng, bảng chéo và nhánh đấu tự tính từ cột `Tỉ số` (dạng `11-8`).
