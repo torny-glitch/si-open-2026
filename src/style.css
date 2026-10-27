@@ -275,7 +275,8 @@ a { color: inherit; }
 .tmembers { font-size: 13.5px; color: var(--muted); }
 .tmembers b { color: var(--ink); }
 .tlist { display: grid; gap: 4px; font-size: 14px; }
-.tlist li { padding-top: 4px; border-top: 1px solid var(--line); }
+.tlist li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-top: 4px; border-top: 1px solid var(--line); }
+.lv { flex-shrink: 0; min-width: 22px; padding: 0 6px; border-radius: 999px; background: var(--blue-wash); color: var(--blue-ink); font-style: normal; font-size: 11px; font-weight: 700; line-height: 20px; text-align: center; }
 @media (max-width: 900px) { .teams-strip { grid-template-columns: 1fr; } }
 
 /* ---------- Chương trình ---------- */
