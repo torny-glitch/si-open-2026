@@ -29,12 +29,14 @@ const EVENT = {
   registerUrl: 'https://forms.cloud.microsoft/r/TVsfqeiqas?origin=QRCode',   // link trong mã QR
   registerDeadline: '',             // ví dụ: '17:00, 12.11.2026' — để trống thì không hiển thị
   prizeTotal: '10.000.000đ',
-  playerTarget: 50,                 // số VĐV dự kiến
-  teamCount: 5,                     // mỗi đội 1 đội trưởng + 9 thành viên
+  playerTarget: 40,                 // tổng VĐV: 5 đội × 8 người
+  teamCount: 5,
+  guestTeam: 'Đội 5',               // đội khách mời (8 người, không thuộc 4 trình)
   courtCount: 5,
-  matchTotal: 50                    // 10 lượt × 5 sân
+  matchTotal: 40                    // 10 lượt gặp nhau × 4 cặp = 40 trận = 8 lượt × 5 sân
 };
-const TEAM_SIZE = EVENT.playerTarget / EVENT.teamCount;   // 10 người gồm cả đội trưởng
+const TEAM_SIZE = EVENT.playerTarget / EVENT.teamCount;   // 8 người mỗi đội
+const PAIRS_PER_TEAM = TEAM_SIZE / 2;                      // 4 cặp: hạng 1–2, 3–4, 5–6, 7–8
 const MATCHES_PER_TEAM = Math.round((EVENT.matchTotal * 2) / EVENT.teamCount);
 
 const MAPS_URL = 'https://www.google.com/maps/search/?api=1&query=' +
@@ -43,10 +45,13 @@ const MAPS_URL = 'https://www.google.com/maps/search/?api=1&query=' +
 const pad = n => String(n).padStart(2, '0');
 
 const LEVELS = ['A', 'B', 'C', 'D'];
-// Số suất tối đa của từng trình (tổng 50). Sửa tại đây khi Ban Tổ chức đổi hạn mức.
-const LEVEL_SLOTS = { A: 12, B: 12, C: 13, D: 13 };
+// Mỗi trình có 10 suất: 8 cho 4 đội nội bộ (2 người/đội) + 2 cho đội khách mời. Sửa tại đây khi Ban Tổ chức đổi hạn mức.
+const INTERNAL_PER_LEVEL = 8;
+const LEVEL_SLOTS = { A: 10, B: 10, C: 10, D: 10 };
+const INTERNAL_TARGET = INTERNAL_PER_LEVEL * LEVELS.length;   // 32 người nội bộ
 const TEAMS = Array.from({ length: EVENT.teamCount }, (_, i) => `Đội ${i + 1}`);
 const ROUNDS = Math.ceil(EVENT.matchTotal / EVENT.courtCount);
+const pairLabel = n => `Cặp ${n} · hạng ${2 * n - 1}–${2 * n}`;
 
 const NAV = [
   ['doi-thi', 'Vận động viên'],
@@ -62,7 +67,7 @@ const TIMELINE = [
   ['06:30', 'Chuẩn bị', 'Chuẩn bị hậu cần', 'Ban Tổ chức chuẩn bị sân bãi và dụng cụ.'],
   ['07:00', 'Khai mạc', 'Check-in, khai mạc và phổ biến thể lệ', 'Ổn định đội hình, phổ biến quy định thi đấu.'],
   ['07:15', 'Vòng tròn', 'Thi đấu vòng tròn', `${EVENT.teamCount} đội đấu vòng tròn trên ${EVENT.courtCount} sân, tổng ${EVENT.matchTotal} trận (${ROUNDS} lượt).`],
-  ['10:45', 'Xếp hạng', 'Thi đấu xếp hạng', 'Hạng 1 gặp hạng 2; hạng 3 gặp hạng 4.'],
+  ['10:45', 'Tranh hạng', 'Tranh giải Ba và chung kết', 'Hạng 3–4 đấu tranh giải Ba, sau đó hạng 1–2 đấu chung kết; mỗi trận đủ 4 cặp trên Sân 1–4.'],
   ['11:20', 'Lucky draw', 'Bốc thăm may mắn', 'Lucky draw vào cuối chương trình.'],
   ['11:40', 'Trao giải', 'Trao giải và chụp ảnh', 'Dự kiến kết thúc chương trình lúc 12:00.']
 ];
@@ -81,16 +86,29 @@ const RULES = [
   {
     title: 'Thành phần đội',
     body: (
-      <p>Dự kiến {EVENT.playerTarget} vận động viên, chia thành {LEVELS.length} trình ({LEVELS[0]}–{LEVELS[LEVELS.length - 1]}).
-        Chia thành {EVENT.teamCount} đội, mỗi đội gồm 1 đội trưởng và {TEAM_SIZE - 1} thành viên; đội trưởng là vận động viên Trình A.
-        Danh sách thành viên từng đội sẽ được công bố sau khi chia đội.</p>
+      <p>Tổng cộng {EVENT.playerTarget} vận động viên, chia thành {EVENT.teamCount} đội, mỗi đội {TEAM_SIZE} người, trong đó có 1 đội khách mời.
+        {' '}{INTERNAL_TARGET} vận động viên nội bộ chia thành {LEVELS.length} trình ({LEVELS[0]}–{LEVELS[LEVELS.length - 1]}), mỗi trình {INTERNAL_TARGET / LEVELS.length} suất;
+        đội trưởng các đội nội bộ là vận động viên Trình A. Đội khách mời cũng được xếp trình.</p>
     )
   },
   {
     title: 'Thể thức vòng tròn',
     body: (
-      <p>{EVENT.teamCount} đội đấu vòng tròn, tổng {EVENT.matchTotal} trận; mỗi đội đấu khoảng {MATCHES_PER_TEAM} trận.
+      <p>{EVENT.teamCount} đội đấu vòng tròn, mỗi cặp đội gặp nhau một lần với {PAIRS_PER_TEAM} trận. Tổng {EVENT.matchTotal} trận, mỗi đội đấu {MATCHES_PER_TEAM} trận.
         {' '}{EVENT.courtCount} sân thi đấu song song, mỗi lượt {EVENT.courtCount} trận.</p>
+    )
+  },
+  {
+    title: 'Ghép cặp và xếp sân',
+    body: (
+      <>
+        <p>Mỗi đội xếp {TEAM_SIZE} người theo thứ tự trình độ từ 1 đến {TEAM_SIZE}, ghép thành {PAIRS_PER_TEAM} cặp. Cặp nào gặp cặp tương ứng của đội kia;
+          ví dụ cặp 1 của Đội 1 gặp cặp 1 của Đội 2.</p>
+        <ul className="chips-static">
+          {Array.from({ length: PAIRS_PER_TEAM }, (_, i) => <li key={i}>{pairLabel(i + 1)}</li>)}
+        </ul>
+        <p>Mỗi lượt có {EVENT.courtCount} trận trên {EVENT.courtCount} sân: đội nào cũng có 2 cặp thi đấu, và Sân 1 luôn là trận của cặp 1 (hạng 1–2).</p>
+      </>
     )
   },
   {
@@ -120,70 +138,100 @@ const RULES = [
   },
   {
     title: 'Tính điểm và xếp hạng',
-    body: <p>Mỗi trận chạm 11 điểm và không có kết quả hoà. Xếp hạng theo số trận thắng, nếu bằng nhau thì xét hiệu số điểm.</p>
+    body: (
+      <>
+        <p>Mỗi trận chạm 11 điểm và không có kết quả hoà. Hai đội gặp nhau {PAIRS_PER_TEAM} trận (đủ {PAIRS_PER_TEAM} cặp): đội thắng nhiều trận hơn thắng đối đầu.
+          Nếu 2–2 thì xét tổng điểm ghi được của {PAIRS_PER_TEAM} trận.</p>
+        <p>Xếp hạng theo số lần thắng đối đầu. Nếu bằng nhau thì xét số trận thắng, rồi hiệu số điểm.</p>
+      </>
+    )
   },
   {
     title: 'Tranh hạng',
-    body: <p>Sau vòng tròn, hạng 1 và hạng 2 tranh Nhất/Nhì; hạng 3 và hạng 4 tranh Ba/Tư.</p>
+    body: <p>Sau vòng tròn, hạng 3 và hạng 4 đấu tranh giải Ba; hạng 1 và hạng 2 đấu chung kết. Mỗi trận tranh hạng đủ {PAIRS_PER_TEAM} cặp trên Sân 1–{PAIRS_PER_TEAM},
+      tính kết quả như vòng tròn. Đội hạng 5 dừng bước.</p>
   }
 ];
 
 /* ------------------------------------------------------------------ *
  *  2. DỮ LIỆU MẶC ĐỊNH (có thể thay bằng file Excel ở Khu vực BTC)
  * ------------------------------------------------------------------ */
-// Khung 40 trận: M = (lượt − 1) × 5 + sân. Chưa bốc thăm nên chưa có tên đội.
-const DEFAULT_MATCHES = Array.from({ length: EVENT.matchTotal }, (_, i) => ({
-  'Mã trận': 'M' + pad(i + 1),
-  'Lượt': Math.floor(i / EVENT.courtCount) + 1,
-  'Mã sân': 'S' + ((i % EVENT.courtCount) + 1),
-  'Nội dung': '', 'Vòng': 'Vòng tròn', 'Giờ': '',
-  'Đội 1': '', 'Đội 2': '', 'Tỉ số': '', 'Trạng thái': 'Dự kiến'
-}));
+// Lịch 40 trận do Ban Tổ chức duyệt: [lượt, sân, đội, đội, cặp].
+// Mỗi lượt 5 trận trên 5 sân; đội nào cũng có 2 cặp thi đấu; Sân 1 luôn là cặp 1 (hạng 1–2).
+// Mã trận M = (lượt − 1) × 5 + sân. Cặp k của đội này gặp cặp k của đội kia.
+const SCHEDULE = [
+  [1,1,1,3,1],[1,2,1,4,2],[1,3,2,5,2],[1,4,2,4,3],[1,5,3,5,4],
+  [2,1,2,4,1],[2,2,3,5,1],[2,3,1,3,3],[2,4,1,4,4],[2,5,2,5,4],
+  [3,1,1,4,1],[3,2,2,4,2],[3,3,3,5,2],[3,4,2,5,3],[3,5,1,3,4],
+  [4,1,2,5,1],[4,2,1,3,2],[4,3,1,4,3],[4,4,3,5,3],[4,5,2,4,4],
+  [5,1,3,4,1],[5,2,4,5,2],[5,3,1,2,3],[5,4,1,5,4],[5,5,2,3,4],
+  [6,1,1,5,1],[6,2,2,3,1],[6,3,1,2,2],[6,4,4,5,3],[6,5,3,4,4],
+  [7,1,4,5,1],[7,2,1,5,2],[7,3,3,4,2],[7,4,2,3,3],[7,5,1,2,4],
+  [8,1,1,2,1],[8,2,2,3,2],[8,3,1,5,3],[8,4,3,4,3],[8,5,4,5,4],
+];
+// Tranh hạng: mỗi trận đủ 4 cặp trên Sân 1–4 (TB1–TB4, CK1–CK4). Tên đội tự điền khi vòng tròn kết thúc.
+const PLAYOFF_ROUNDS = [['Tranh giải Ba', 'TB'], ['Chung kết', 'CK']];
+const DEFAULT_MATCHES = [
+  ...SCHEDULE.map(([round, court, a, b, pair], i) => ({
+    'Mã trận': 'M' + pad(i + 1), 'Lượt': round, 'Mã sân': 'S' + court, 'Cặp': pair,
+    'Nội dung': '', 'Vòng': 'Vòng tròn', 'Giờ': '',
+    'Đội 1': `Đội ${a}`, 'Đội 2': `Đội ${b}`, 'Tỉ số': '', 'Trạng thái': 'Dự kiến'
+  })),
+  ...PLAYOFF_ROUNDS.flatMap(([label, code]) => Array.from({ length: PAIRS_PER_TEAM }, (_, k) => ({
+    'Mã trận': code + (k + 1), 'Lượt': label, 'Mã sân': 'S' + (k + 1), 'Cặp': k + 1,
+    'Nội dung': '', 'Vòng': label, 'Giờ': '',
+    'Đội 1': '', 'Đội 2': '', 'Tỉ số': '', 'Trạng thái': 'Dự kiến'
+  })))
+];
 
 const P = (level, name, dept = '', team = '', captain = false) => ({
   'Trình': level, 'Họ tên': name, 'Phòng ban': dept, 'Vai trò': captain ? 'Đội trưởng' : '', 'Đội': team
 });
-// Thứ tự trong từng trình theo bảng chia trình của Ban Tổ chức. Đội trưởng = người Trình A; Đội 5 chưa có danh sách.
+// Thứ tự trong từng trình theo bảng chia trình của Ban Tổ chức. Đội trưởng = người Trình A; Đội 5 là đội khách mời.
 const DEFAULT_PLAYERS = [
   P('A', 'Nguyễn Hữu Nghị', 'DigiLenO', 'Đội 1', true),
-  P('A', 'Nguyễn Mạnh Tuấn', 'Squad CMB - dự án Digi Leno', 'Đội 1'),
+  P('A', 'Phạm Hồng Phúc', 'UC RB', 'Đội 1'),
   P('A', 'Phan Khánh Toàn', 'Loyalty', 'Đội 3', true),
   P('A', 'Hà Duyên Tiến', 'UC EB', 'Đội 3'),
   P('A', 'Lê Trọng Tú', 'Agile', 'Đội 4', true),
   P('A', 'Trần Anh Kiên', 'DC', 'Đội 4'),
+  P('A', 'Nguyễn Thanh Sơn', 'DC', 'Đội 2'),
   P('A', 'Trần Trung Hiếu', 'DC', 'Đội 2', true),
-  P('A', 'Trần Trung Anh', 'DC', 'Đội 2'),
 
   P('B', 'Nghiêm An Việt', 'DigiLenO', 'Đội 1'),
-  P('B', 'Phạm Hồng Phúc', 'UC RB', 'Đội 1'),
+  P('B', 'Nguyễn Mạnh Tuấn', 'Squad CMB - dự án Digi Leno', 'Đội 1'),
   P('B', 'Chu Mạnh Quang', 'AI', 'Đội 4'),
   P('B', 'Nguyễn Hai Long', 'DC Ops', 'Đội 4'),
   P('B', 'Nguyễn Duy Minh Vũ', 'CM', 'Đội 3'),
   P('B', 'Lê Thanh Tuấn', 'PMO / dự án DigilenO', 'Đội 3'),
   P('B', 'Đinh Anh Tú', 'DC', 'Đội 2'),
-  P('B', 'Nguyễn Thanh Sơn', 'DC', 'Đội 2'),
+  P('B', 'Trần Trung Anh', 'DC', 'Đội 2'),
 
   P('C', 'Nguyễn Hương Lan', 'DigiLenO', 'Đội 1'),
   P('C', 'Vũ Thị Vân Anh', 'UCSL - UCRB', 'Đội 1'),
   P('C', 'Hà Thị Phương Thúy', 'Loyalty', 'Đội 3'),
   P('C', 'Hoàng Bích Phượng', 'Loyalty', 'Đội 3'),
-  P('C', 'Phạm Thị Bích Nga', 'UC RB', 'Đội 4'),
   P('C', 'Thanh Hà RB', 'UC RB', 'Đội 4'),
+  P('C', 'Trương Thu Hằng', 'Khách mời', 'Đội 5'),
   P('C', 'Lê Cường', 'DC', 'Đội 2'),
+  P('C', 'Nguyễn Đăng Thiên', 'DC', 'Đội 2'),
+  P('C', 'Nguyễn Lê Tới', 'DC', 'Đội 2'),
+  P('C', 'Văn Minh Phương', 'Khách mời', 'Đội 5'),
 
-  P('D', 'Bùi Minh Phương', 'UC EB', 'Đội 2'),
+  P('D', 'Bùi Minh Phương', 'UC EB', 'Đội 3'),
   P('D', 'Nguyễn Quốc Minh Nhật', 'SI DC', 'Đội 1'),
   P('D', 'Nguyễn Thị Loan', 'AI', 'Đội 3'),
-  P('D', 'Nguyễn Ngọc Toàn', 'CM', 'Đội 4')
+  P('D', 'Nguyễn Ngọc Toàn', 'CM', 'Đội 4'),
+  P('D', 'Hoàng Thị Thu Trang', 'XP', 'Đội 2')
 ];
 
-const MATCH_COLS = ['Mã trận', 'Lượt', 'Mã sân', 'Nội dung', 'Vòng', 'Giờ', 'Đội 1', 'Đội 2', 'Tỉ số', 'Trạng thái'];
+const MATCH_COLS = ['Mã trận', 'Lượt', 'Mã sân', 'Cặp', 'Nội dung', 'Vòng', 'Giờ', 'Đội 1', 'Đội 2', 'Tỉ số', 'Trạng thái'];
 const PLAYER_COLS = ['Trình', 'Họ tên', 'Phòng ban', 'Vai trò', 'Đội'];
 
 /* ------------------------------------------------------------------ *
  *  3. HÀM TIỆN ÍCH
  * ------------------------------------------------------------------ */
-const KEYS = { matches: 'siopen_matches_v6', players: 'siopen_players_v6' };
+const KEYS = { matches: 'siopen_matches_v8', players: 'siopen_players_v8' };
 const readSaved = (key, fallback) => {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
 };
@@ -201,8 +249,13 @@ const parseScore = s => {
   return r ? [Number(r[1]), Number(r[2])] : null;
 };
 const FINAL_RE = /tranh nhất|nhất\s*\/\s*nhì|chung kết/i;
-const THIRD_RE = /tranh ba|ba\s*\/\s*tư|hạng ba/i;
+const THIRD_RE = /tranh (giải )?ba|ba\s*\/\s*tư|hạng ba/i;
 const isCaptain = p => p['Vai trò'] === 'Đội trưởng';
+const internalPlayers = list => list.filter(p => p['Đội'] !== EVENT.guestTeam);
+const openSlots = list => {
+  const inn = internalPlayers(list);
+  return LEVELS.map(l => [l, Math.max(0, INTERNAL_PER_LEVEL - inn.filter(p => p['Trình'] === l).length)]).filter(([, n]) => n > 0);
+};
 const isPlayoff = x => FINAL_RE.test(x['Vòng'] || '') || THIRD_RE.test(x['Vòng'] || '') || /xếp hạng|playoff/i.test(x['Vòng'] || '');
 
 const courtOf = x => String(x['Mã sân'] || x['Sân'] || '').trim();
@@ -229,6 +282,8 @@ const normalizeMatch = row => {
   const o = trimRow(row);
   o['Giờ'] = fmtTime(o['Giờ']);
   if (typeof o['Tỉ số'] === 'number') o['Tỉ số'] = String(o['Tỉ số']);
+  const pm = String(o['Cặp'] ?? '').match(/\d+/);
+  o['Cặp'] = pm ? Number(pm[0]) : '';
   if (/^L\d+$/i.test(String(o['Lượt'] ?? ''))) o['Lượt'] = Number(String(o['Lượt']).slice(1));
   return o;
 };
@@ -238,35 +293,70 @@ const normalizePlayer = row => {
   return o;
 };
 
-function computeStandings(matches, teams) {
-  const rows = Object.fromEntries(teams.map(t => [t, { team: t, p: 0, w: 0, l: 0, sf: 0, sa: 0 }]));
-  matches.filter(x => !isPlayoff(x)).forEach(x => {
-    const sc = parseScore(x['Tỉ số']);
-    const a = rows[splitTeam(x['Đội 1']).main];
-    const b = rows[splitTeam(x['Đội 2']).main];
-    if (!sc || !a || !b || sc[0] === sc[1]) return;   // không có kết quả hoà
-    a.p++; b.p++;
-    a.sf += sc[0]; a.sa += sc[1]; b.sf += sc[1]; b.sa += sc[0];
-    if (sc[0] > sc[1]) { a.w++; b.l++; } else { b.w++; a.l++; }
-  });
-  return Object.values(rows).sort((x, y) =>
-    y.w - x.w || (y.sf - y.sa) - (x.sf - x.sa) || y.sf - x.sf || byNumeric(x.team, y.team));
-}
-
-// Thành tích đối đầu của đội a với đội b (hai đội có thể gặp nhau nhiều trận)
-function headToHead(matches, a, b) {
-  let total = 0, w = 0, l = 0;
-  matches.filter(x => !isPlayoff(x)).forEach(x => {
-    const t1 = splitTeam(x['Đội 1']).main, t2 = splitTeam(x['Đội 2']).main;
-    if (!((t1 === a && t2 === b) || (t1 === b && t2 === a))) return;
-    total++;
+// Kết quả một lần gặp nhau (4 trận/4 cặp) giữa đội a và đội b.
+// Thắng nhiều trận hơn thì thắng; đã đủ 3/4 trận là chốt. Nếu 2–2 sau 4 trận thì xét tổng điểm ghi được.
+function encounterOf(list, a, b) {
+  let wa = 0, wb = 0, pa = 0, pb = 0, scored = 0;
+  list.forEach(x => {
     const sc = parseScore(x['Tỉ số']);
     if (!sc || sc[0] === sc[1]) return;
-    const mine = t1 === a ? sc[0] : sc[1];
-    const theirs = t1 === a ? sc[1] : sc[0];
-    if (mine > theirs) w++; else l++;
+    const first = splitTeam(x['Đội 1']).main === a;
+    const sa = first ? sc[0] : sc[1], sb = first ? sc[1] : sc[0];
+    pa += sa; pb += sb; scored++;
+    if (sa > sb) wa++; else wb++;
   });
-  return { total, w, l, played: w + l };
+  const total = list.length;
+  const need = Math.floor(total / 2) + 1;
+  let winner = null, byPoints = false;
+  if (total > 0) {
+    if (wa >= need) winner = a;
+    else if (wb >= need) winner = b;
+    else if (scored === total && pa !== pb) { winner = pa > pb ? a : b; byPoints = true; }
+  }
+  return { total, scored, wa, wb, pa, pb, winner, byPoints };
+}
+
+const pairMatches = (matches, a, b) => matches.filter(x => {
+  if (isPlayoff(x)) return false;
+  const t1 = splitTeam(x['Đội 1']).main, t2 = splitTeam(x['Đội 2']).main;
+  return (t1 === a && t2 === b) || (t1 === b && t2 === a);
+});
+
+function computeStandings(matches, teams) {
+  const rows = Object.fromEntries(teams.map(t => [t, { team: t, p: 0, w: 0, l: 0, sf: 0, sa: 0, ew: 0, el: 0 }]));
+  const groups = new Map();
+  matches.filter(x => !isPlayoff(x)).forEach(x => {
+    const t1 = splitTeam(x['Đội 1']).main, t2 = splitTeam(x['Đội 2']).main;
+    if (!rows[t1] || !rows[t2] || t1 === t2) return;
+    const [a, b] = [t1, t2].sort(byNumeric);
+    const key = a + '|' + b;
+    if (!groups.has(key)) groups.set(key, { a, b, list: [] });
+    groups.get(key).list.push(x);
+    const sc = parseScore(x['Tỉ số']);
+    if (!sc || sc[0] === sc[1]) return;                  // không có kết quả hoà
+    const A = rows[t1], B = rows[t2];
+    A.p++; B.p++; A.sf += sc[0]; A.sa += sc[1]; B.sf += sc[1]; B.sa += sc[0];
+    if (sc[0] > sc[1]) { A.w++; B.l++; } else { B.w++; A.l++; }
+  });
+  groups.forEach(({ a, b, list }) => {
+    const e = encounterOf(list, a, b);
+    if (e.winner) { rows[e.winner].ew++; rows[e.winner === a ? b : a].el++; }
+  });
+  return Object.values(rows).sort((x, y) =>
+    y.ew - x.ew || y.w - x.w || (y.sf - y.sa) - (x.sf - x.sa) || y.sf - x.sf || byNumeric(x.team, y.team));
+}
+
+// Khi vòng tròn kết thúc, tự điền tên đội cho các trận tranh hạng
+function withPlayoffTeams(matches, standings) {
+  const rr = matches.filter(x => !isPlayoff(x));
+  const complete = rr.length > 0 && rr.every(x => parseScore(x['Tỉ số']));
+  if (!complete) return matches;
+  return matches.map(x => {
+    if (!isPlayoff(x) || x['Đội 1'] || x['Đội 2']) return x;
+    const [i, j] = FINAL_RE.test(x['Vòng'] || '') ? [0, 1] : THIRD_RE.test(x['Vòng'] || '') ? [2, 3] : [-1, -1];
+    if (i < 0 || !standings[i] || !standings[j]) return x;
+    return { ...x, 'Đội 1': standings[i].team, 'Đội 2': standings[j].team };
+  });
 }
 
 const statusClass = s =>
@@ -406,7 +496,7 @@ function Timeline() {
   );
 }
 
-function BracketMatch({ title, a, b }) {
+function BracketMatch({ title, a, b, note }) {
   const pending = s => /^Hạng \d$/.test(s.name);
   return (
     <div className="bk-match">
@@ -416,6 +506,7 @@ function BracketMatch({ title, a, b }) {
           <span>{s.name}</span><b>{s.score ?? '–'}</b>
         </div>
       ))}
+      {note && <p className="bk-note">{note}</p>}
     </div>
   );
 }
@@ -447,7 +538,7 @@ function Hero() {
           <p className="hero-org">MSB · Strategy &amp; Innovation</p>
           <h1><span>Pickleball</span><span className="h1-band">SI Open 2026</span></h1>
           <p className="hero-tag">Bứt phá giới hạn – Gắn kết thành công</p>
-          <p className="hero-lead">{EVENT.playerTarget} vận động viên, {EVENT.teamCount} đội, {EVENT.courtCount} sân thi đấu song song và cả Khối SI cùng đến cổ vũ. Một buổi sáng thứ Bảy thật vui.</p>
+          <p className="hero-lead">{EVENT.playerTarget} vận động viên, {EVENT.teamCount} đội (có 1 đội khách mời), {EVENT.courtCount} sân thi đấu song song và cả Khối SI cùng đến cổ vũ. Một buổi sáng thứ Bảy thật vui.</p>
           <div className="hero-actions">
             <a className="btn btn-accent" href="#dang-ky">Đăng ký ngay <ArrowUpRight size={18} aria-hidden="true" /></a>
             <a className="btn btn-ghost" href="#lich">Lịch thi đấu</a>
@@ -474,14 +565,17 @@ function Hero() {
   );
 }
 
-function Register({ registered }) {
-  const left = Math.max(0, EVENT.playerTarget - registered);
+function Register({ players }) {
+  const open = openSlots(players);
+  const left = open.reduce((a, [, n]) => a + n, 0);
   return (
     <section className="register" id="dang-ky">
       <div className="container register-grid">
         <div>
           <h2>Quét QR, giữ ngay suất thi đấu</h2>
-          <p>Còn <b>{left}</b> trong {EVENT.playerTarget} suất. Anh/chị/em đăng ký sớm nhé!</p>
+          {left > 0
+            ? <p>Còn <b>{left}</b> suất nội bộ ({open.map(([l, n]) => `Trình ${l}: ${n}`).join(' · ')}). Anh/chị/em đăng ký sớm nhé!</p>
+            : <p>Danh sách đã đủ người. Cảm ơn anh/chị/em đã đăng ký!</p>}
           {EVENT.registerDeadline && <p className="register-deadline">Hạn chót đăng ký: <b>{EVENT.registerDeadline}</b></p>}
           <div className="register-actions">
             <a className="btn btn-dark" href={EVENT.registerUrl} target="_blank" rel="noopener noreferrer">Đăng ký ngay <ArrowUpRight size={18} aria-hidden="true" /></a>
@@ -515,26 +609,30 @@ function Cheer() {
 }
 
 function Players({ players }) {
+  const inn = useMemo(() => internalPlayers(players), [players]);
   const { groups, unassigned } = useMemo(() => {
     const g = Object.fromEntries(LEVELS.map(l => [l, []]));
     const extra = [];
     players.forEach(p => { (g[p['Trình']] || extra).push(p); });
     return { groups: g, unassigned: extra };
   }, [players]);
-  const registered = players.length;
-  const percent = Math.min(100, Math.round((registered / EVENT.playerTarget) * 100));
+  const open = openSlots(players);
+  const left = open.reduce((a, [, n]) => a + n, 0);
+  const guestCount = players.length - inn.length;
+  const percent = Math.min(100, Math.round((players.length / EVENT.playerTarget) * 100));
 
   return (
     <section className="section" id="doi-thi">
       <div className="container">
         <SectionHead title="Vận động viên theo trình"
-          lead={`Dự kiến ${EVENT.playerTarget} vận động viên chia thành ${LEVELS.length} trình (A–D). Ô trống là những suất còn mở.`}
+          lead={`${EVENT.playerTarget} vận động viên chia thành ${LEVELS.length} trình (A–D), mỗi trình ${LEVEL_SLOTS.A} suất gồm ${INTERNAL_PER_LEVEL} nội bộ và ${LEVEL_SLOTS.A - INTERNAL_PER_LEVEL} khách mời. Ô trống là những suất còn mở.`}
           aside={(
             <div className="progress">
-              <p><b>{registered}</b><span>/{EVENT.playerTarget} VĐV đã có tên</span></p>
+              <p><b>{players.length}</b><span>/{EVENT.playerTarget} VĐV đã có tên</span></p>
               <div className="progress-track" role="progressbar" aria-valuemin={0} aria-valuemax={EVENT.playerTarget}
-                   aria-valuenow={registered} aria-label="Số vận động viên đã đăng ký"><i style={{ width: percent + '%' }} /></div>
-              <small>Còn {Math.max(0, EVENT.playerTarget - registered)} suất trống</small>
+                   aria-valuenow={players.length} aria-label="Số vận động viên đã có tên"><i style={{ width: percent + '%' }} /></div>
+              <small>Nội bộ {inn.length}/{INTERNAL_TARGET} · Khách mời {guestCount}/{TEAM_SIZE}<br />
+                {left > 0 ? `Còn ${left} suất nội bộ (${open.map(([l, n]) => `Trình ${l}: ${n}`).join(' · ')})` : 'Suất nội bộ đã đủ'}</small>
             </div>
           )} />
 
@@ -547,11 +645,11 @@ function Players({ players }) {
                 <header className="level-head">
                   <span className="level-letter" aria-hidden="true">{l}</span>
                   <h3>Trình {l}</h3>
-                  <span className="level-count">{members.length}/{LEVEL_SLOTS[l]}</span>
+                  <span className={'level-count' + (empty === 0 ? ' is-full' : '')}>{members.length}/{LEVEL_SLOTS[l]}{empty === 0 ? ' · đủ' : ''}</span>
                 </header>
                 <ol className="level-list">
                   {members.map((p, i) => (
-                    <li className="is-filled" key={p['Họ tên'] + i}>
+                    <li className={'is-filled' + (p['Đội'] === EVENT.guestTeam ? ' is-guest' : '')} key={p['Họ tên'] + i}>
                       <span className="pname">{p['Họ tên']}</span>
                       {p['Phòng ban'] && <span className="pdept" title={p['Phòng ban']}>{p['Phòng ban']}</span>}
                     </li>
@@ -575,32 +673,38 @@ function Players({ players }) {
           <div>
             <h3 className="subhead">Chia đội</h3>
             <p className="subnote">
-              {EVENT.teamCount} đội, mỗi đội gồm 1 đội trưởng và {TEAM_SIZE - 1} thành viên. Đội trưởng là vận động viên Trình A;
-              chữ cái cạnh tên là trình của từng người. Các đội còn trống sẽ được cập nhật sau.
+              {EVENT.teamCount} đội, mỗi đội {TEAM_SIZE} người; {EVENT.guestTeam} là đội khách mời.
+              Chữ cái cạnh tên là trình của từng người, <b>ĐT</b> là đội trưởng (Trình A).
             </p>
           </div>
           <div className="team-cards">
             {TEAMS.map((t, i) => {
-              const all = players.filter(p => p['Đội'] === t);
-              const cap = all.find(isCaptain);
-              const members = all.filter(p => p !== cap)
-                .sort((a, b) => LEVELS.indexOf(a['Trình']) - LEVELS.indexOf(b['Trình']));
+              const guest = t === EVENT.guestTeam;
+              const all = players.filter(p => p['Đội'] === t).sort((a, b) =>
+                Number(isCaptain(b)) - Number(isCaptain(a))
+                || (LEVELS.indexOf(a['Trình']) + 1 || 99) - (LEVELS.indexOf(b['Trình']) + 1 || 99));
+              const rows = Array.from({ length: Math.max(TEAM_SIZE, all.length) }, (_, k) => all[k] || null);
               return (
-                <article className="tcard" key={t}>
-                  <header><span className="team-no" aria-hidden="true">{i + 1}</span><h4>{t}</h4></header>
-                  <p className="tcap">
-                    <span className="badge">Đội trưởng</span>
-                    {cap ? cap['Họ tên'] : 'Chưa xác định'}
-                    {cap && cap['Phòng ban'] && <small>{cap['Phòng ban']}</small>}
-                  </p>
-                  <p className="tmembers"><b>{members.length}/{TEAM_SIZE - 1}</b> thành viên{members.length === 0 ? ' · chờ chia đội' : ''}</p>
-                  {members.length > 0 && (
-                    <ul className="tlist">
-                      {members.map((m, k) => (
-                        <li key={m['Họ tên'] + k}>{m['Họ tên']}<i className="lv" title={'Trình ' + m['Trình']}>{m['Trình']}</i></li>
-                      ))}
-                    </ul>
-                  )}
+                <article className={'tcard' + (guest ? ' is-guest' : '')} key={t}>
+                  <header>
+                    <span className="team-no" aria-hidden="true">{i + 1}</span>
+                    <h4>{t}</h4>
+                    {guest && <span className="tguest">Khách mời</span>}
+                    <span className="tcount">{all.length}/{TEAM_SIZE}</span>
+                  </header>
+                  <ol className="tlist">
+                    {rows.map((m, k) => m ? (
+                      <li key={m['Họ tên'] + k}>
+                        <span className="tname">{m['Họ tên']}</span>
+                        <span className="tmeta">
+                          {isCaptain(m) && <abbr className="dt" title="Đội trưởng">ĐT</abbr>}
+                          {m['Trình'] && <i className="lv" title={'Trình ' + m['Trình']}>{m['Trình']}</i>}
+                        </span>
+                      </li>
+                    ) : (
+                      <li className="is-empty" key={'e' + k}>{guest ? 'Chờ công bố' : 'Còn trống'}</li>
+                    ))}
+                  </ol>
                 </article>
               );
             })}
@@ -623,8 +727,9 @@ function MatchCard({ x }) {
         <strong className="mcode">{x['Mã trận'] || '—'}</strong>
         <span className="mcourt">{courtLabel(courtOf(x)) || 'Chưa xếp sân'}</span>
       </div>
+      {Number(x['Cặp']) > 0 && <p className="mpair">{pairLabel(Number(x['Cặp']))}</p>}
       {pending ? (
-        <p className="mcard-wait">Chờ bốc thăm</p>
+        <p className="mcard-wait">{isPlayoff(x) ? 'Chờ kết quả vòng tròn' : 'Chờ bốc thăm'}</p>
       ) : (
         <div className="mcard-teams">
           {rows.map(([name, mine, theirs], i) => (
@@ -647,37 +752,44 @@ function MatchCenter({ matches, onOpenAdmin }) {
   const [event, setEvent] = useState('');
   const [round, setRound] = useState('');
   const [court, setCourt] = useState('');
+  const [team, setTeam] = useState('');
+  const [pair, setPair] = useState('');
   const uniq = list => [...new Set(list.filter(Boolean))].sort(byNumeric);
   const events = useMemo(() => uniq(matches.map(x => x['Nội dung'])), [matches]);
   const rounds = useMemo(() => uniq(matches.map(x => x['Vòng'])), [matches]);
   const courts = useMemo(() => uniq(matches.map(courtOf)), [matches]);
+  const teamList = useMemo(() => uniq(matches.flatMap(x => [splitTeam(x['Đội 1']).main, splitTeam(x['Đội 2']).main])), [matches]);
+  const pairList = useMemo(() => uniq(matches.map(x => Number(x['Cặp']) || '')), [matches]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return matches.filter(x => {
-      const hay = [...Object.values(x), roundLabel(x), courtLabel(courtOf(x)), x['Lượt'] ? 'L' + x['Lượt'] : ''].join(' ').toLowerCase();
-      return (!q || hay.includes(q)) && (!event || x['Nội dung'] === event) && (!round || x['Vòng'] === round) && (!court || courtOf(x) === court);
+      const hay = [...Object.values(x), roundLabel(x), courtLabel(courtOf(x)), x['Lượt'] ? 'L' + x['Lượt'] : '', Number(x['Cặp']) ? pairLabel(Number(x['Cặp'])) : ''].join(' ').toLowerCase();
+      return (!q || hay.includes(q)) && (!event || x['Nội dung'] === event) && (!round || x['Vòng'] === round) && (!court || courtOf(x) === court)
+        && (!team || splitTeam(x['Đội 1']).main === team || splitTeam(x['Đội 2']).main === team)
+        && (!pair || String(x['Cặp']) === pair);
     });
-  }, [matches, query, event, round, court]);
+  }, [matches, query, event, round, court, team, pair]);
 
   const slots = useMemo(() => {
     const g = new Map();
+    const idx = new Map(matches.map((x, i) => [x, i]));
+    const rk = x => (x['Lượt'] !== '' && x['Lượt'] != null && Number.isFinite(Number(x['Lượt'])) ? Number(x['Lượt']) : 100 + (idx.get(x) ?? 0));
     [...filtered]
-      .sort((a, b) => (Number(a['Lượt']) || 999) - (Number(b['Lượt']) || 999)
-        || String(a['Giờ']).localeCompare(String(b['Giờ'])) || byNumeric(courtOf(a), courtOf(b)))
+      .sort((a, b) => rk(a) - rk(b) || String(a['Giờ']).localeCompare(String(b['Giờ'])) || byNumeric(courtOf(a), courtOf(b)))
       .forEach(x => { const k = roundLabel(x); if (!g.has(k)) g.set(k, []); g.get(k).push(x); });
     return [...g];
-  }, [filtered]);
+  }, [filtered, matches]);
 
-  const hasFilter = query || event || round || court;
-  const reset = () => { setQuery(''); setEvent(''); setRound(''); setCourt(''); };
+  const hasFilter = query || event || round || court || team || pair;
+  const reset = () => { setQuery(''); setEvent(''); setRound(''); setCourt(''); setTeam(''); setPair(''); };
 
   return (
     <section className="section" id="lich">
       <div className="container">
         <SectionHead title="Tìm trận của bạn trong vài giây"
-          lead={`Gõ mã trận (M17), mã sân (S2), lượt (L4) hoặc tên đội. ${EVENT.courtCount} sân thi đấu song song, mỗi lượt ${EVENT.courtCount} trận.`}
-          aside={<p className="count"><b>{pad(matches.length)}</b> trận<br />trong lịch</p>} />
+          lead={`Gõ mã trận (M17), mã sân (S2), lượt (L4) hoặc lọc theo đội, theo cặp. ${EVENT.courtCount} sân thi đấu song song, mỗi lượt ${EVENT.courtCount} trận và Sân 1 luôn là trận của cặp hạng 1–2.`}
+          aside={<p className="count"><b>{pad(matches.length)}</b> trận<br />{matches.filter(x => !isPlayoff(x)).length} vòng tròn + {matches.filter(isPlayoff).length} tranh hạng</p>} />
 
         <div className="toolbar">
           <label className="search">
@@ -687,6 +799,16 @@ function MatchCenter({ matches, onOpenAdmin }) {
                    placeholder="Mã trận, sân, lượt hoặc tên đội…" />
           </label>
           <div className="filters">
+            {teamList.length > 1 && (
+              <select aria-label="Lọc theo đội" value={team} onChange={e => setTeam(e.target.value)}>
+                <option value="">Tất cả đội</option>{teamList.map(v => <option key={v}>{v}</option>)}
+              </select>
+            )}
+            {pairList.length > 1 && (
+              <select aria-label="Lọc theo cặp" value={pair} onChange={e => setPair(e.target.value)}>
+                <option value="">Tất cả cặp</option>{pairList.map(v => <option key={v} value={String(v)}>{pairLabel(v)}</option>)}
+              </select>
+            )}
             {events.length > 1 && (
               <select aria-label="Lọc theo nội dung" value={event} onChange={e => setEvent(e.target.value)}>
                 <option value="">Tất cả nội dung</option>{events.map(v => <option key={v}>{v}</option>)}
@@ -748,7 +870,7 @@ function Standings({ standings, teams, matches }) {
     <section className="section section--paper" id="bang">
       <div className="container">
         <SectionHead title="Bảng xếp hạng vòng tròn"
-          lead="Không có kết quả hoà. Xếp hạng theo số trận thắng, sau đó đến hiệu số điểm. Bảng tự cập nhật khi Ban Tổ chức nhập tỉ số."
+          lead={`Hai đội gặp nhau ${PAIRS_PER_TEAM} trận: thắng nhiều trận hơn thì thắng đối đầu, nếu 2–2 thì xét tổng điểm ghi được. Xếp hạng theo số lần thắng đối đầu, sau đó đến số trận thắng và hiệu số điểm.`}
           aside={!anyPlayed && <p className="pill">Chưa có kết quả</p>} />
         <div className="two-col">
           <div>
@@ -758,6 +880,7 @@ function Standings({ standings, teams, matches }) {
                 <thead>
                   <tr>
                     <th scope="col">Hạng</th><th scope="col">Đội</th>
+                    <th scope="col" className="num" title="Số lần thắng – thua đối đầu">Đối đầu T–B</th>
                     <th scope="col" className="num">Đã đấu</th><th scope="col" className="num">Thắng</th>
                     <th scope="col" className="num">Thua</th>
                     <th scope="col" className="num">Điểm ghi–thủng</th><th scope="col" className="num">Hiệu số</th>
@@ -768,6 +891,7 @@ function Standings({ standings, teams, matches }) {
                     <tr key={r.team} className={i < 2 ? 'row-top' : i < 4 ? 'row-low' : 'row-out'}>
                       <td className="rank">{anyPlayed ? i + 1 : '–'}</td>
                       <th scope="row"><span className="t-name">{r.team}</span></th>
+                      <td className="num"><b>{r.ew}–{r.el}</b></td>
                       <td className="num">{r.p}<span className="of">/{MATCHES_PER_TEAM}</span></td>
                       <td className="num">{r.w}</td><td className="num">{r.l}</td>
                       <td className="num">{r.sf}–{r.sa}</td>
@@ -777,12 +901,12 @@ function Standings({ standings, teams, matches }) {
                 </tbody>
               </table>
             </div>
-            <p className="legend"><i className="dot dot--top" /> Hạng 1–2 tranh Nhất/Nhì <i className="dot dot--low" /> Hạng 3–4 tranh Ba/Tư <i className="dot dot--out" /> Hạng 5 dừng ở vòng tròn</p>
+            <p className="legend"><i className="dot dot--top" /> Hạng 1–2 đấu chung kết <i className="dot dot--low" /> Hạng 3–4 tranh giải Ba <i className="dot dot--out" /> Hạng 5 dừng ở vòng tròn</p>
           </div>
 
           <div>
             <h3 className="subhead">Bảng chéo</h3>
-            <p className="subnote">Đọc theo hàng: số trận thắng–thua của đội ở hàng khi gặp đội ở cột. Dòng nhỏ là tổng số trận hai đội gặp nhau trong lịch.</p>
+            <p className="subnote">Đọc theo hàng: số trận thắng–thua của đội ở hàng khi gặp đội ở cột. Ô nền đậm là đội thắng đối đầu; dòng nhỏ là tổng số trận hoặc “xét điểm” khi 2–2.</p>
             <div className="table-wrap">
               <table className="table cross">
                 <caption className="sr-only">Bảng chéo kết quả giữa các đội</caption>
@@ -795,12 +919,13 @@ function Standings({ standings, teams, matches }) {
                       <th scope="row">{a}</th>
                       {teams.map(b => {
                         if (a === b) return <td key={b} className="self" aria-hidden="true" />;
-                        const h = headToHead(matches, a, b);
-                        if (!h.total) return <td key={b} className="cell-empty">–</td>;
-                        const cls = h.played === 0 ? 'cell-plan' : 'cell-score ' + (h.w >= h.l ? 'is-win' : 'is-loss');
+                        const e = encounterOf(pairMatches(matches, a, b), a, b);
+                        if (!e.total) return <td key={b} className="cell-empty">–</td>;
+                        const cls = e.scored === 0 ? 'cell-plan' : e.winner ? 'cell-score ' + (e.winner === a ? 'is-win' : 'is-loss') : 'cell-part';
                         return (
                           <td key={b} className={cls}>
-                            <b>{h.played ? `${h.w}–${h.l}` : '–'}</b><span>{h.total} trận</span>
+                            <b>{e.scored ? `${e.wa}–${e.wb}` : '–'}</b>
+                            <span>{e.byPoints ? `xét điểm ${e.pa}–${e.pb}` : `${e.total} trận`}</span>
                           </td>
                         );
                       })}
@@ -821,34 +946,38 @@ function Bracket({ matches, standings }) {
   const complete = rr.length > 0 && rr.every(x => parseScore(x['Tỉ số']));
   const seat = i => (complete && standings[i] ? standings[i].team : `Hạng ${i + 1}`);
 
+  // Mỗi trận tranh hạng gồm 4 cặp; kết quả là số cặp thắng của từng đội
   const build = (re, n1, n2) => {
-    const x = matches.find(v => re.test(v['Vòng'] || '') && (v['Đội 1'] || v['Đội 2']));
-    if (!x) return { a: { name: n1 }, b: { name: n2 }, sc: null };
-    const sc = parseScore(x['Tỉ số']);
+    const list = matches.filter(v => re.test(v['Vòng'] || '') && (v['Đội 1'] || v['Đội 2']));
+    if (!list.length) return { a: { name: n1 }, b: { name: n2 }, e: null };
+    const A = splitTeam(list[0]['Đội 1']).main || n1;
+    const B = splitTeam(list[0]['Đội 2']).main || n2;
+    const e = encounterOf(list, A, B);
     return {
-      a: { name: splitTeam(x['Đội 1']).main || n1, score: sc?.[0], win: !!sc && sc[0] > sc[1] },
-      b: { name: splitTeam(x['Đội 2']).main || n2, score: sc?.[1], win: !!sc && sc[1] > sc[0] },
-      sc
+      a: { name: A, score: e.scored ? e.wa : undefined, win: e.winner === A },
+      b: { name: B, score: e.scored ? e.wb : undefined, win: e.winner === B },
+      e
     };
   };
   const final = build(FINAL_RE, seat(0), seat(1));
   const third = build(THIRD_RE, seat(2), seat(3));
-  const champion = final.sc && final.sc[0] !== final.sc[1] ? (final.sc[0] > final.sc[1] ? final.a.name : final.b.name) : null;
+  const champion = final.e && final.e.winner ? final.e.winner : null;
+  const note = r => (r.e && r.e.byPoints ? `${r.e.wa}–${r.e.wb} trận, xét tổng điểm ghi được ${r.e.pa}–${r.e.pb}` : '');
 
   return (
     <section className="section" id="nhanh">
       <div className="container">
         <SectionHead title="Con đường tới ngôi vô địch"
-          lead="Sau vòng tròn, hạng 1–2 tranh Nhất/Nhì; hạng 3–4 tranh Ba/Tư. Tên đội sẽ tự điền khi vòng tròn kết thúc." />
+          lead={`Sau vòng tròn, hạng 3–4 đấu tranh giải Ba rồi hạng 1–2 đấu chung kết. Mỗi trận đủ ${PAIRS_PER_TEAM} cặp trên Sân 1–${PAIRS_PER_TEAM}. Tên đội sẽ tự điền khi vòng tròn kết thúc.`} />
         <div className="bracket">
-          <BracketMatch title="Tranh Nhất/Nhì" a={final.a} b={final.b} />
+          <BracketMatch title={`Chung kết · ${PAIRS_PER_TEAM} cặp`} a={final.a} b={final.b} note={note(final)} />
           <span className="bk-link" aria-hidden="true" />
           <div className="bk-champ">
             <Trophy size={34} aria-hidden="true" />
             <strong>{champion || 'Nhà vô địch'}</strong>
-            <span>{champion ? 'SI Open 2026' : 'Chờ trận tranh Nhất/Nhì'}</span>
+            <span>{champion ? 'SI Open 2026' : 'Chờ trận chung kết'}</span>
           </div>
-          <div className="bk-third"><BracketMatch title="Tranh Ba/Tư" a={third.a} b={third.b} /></div>
+          <div className="bk-third"><BracketMatch title={`Tranh giải Ba · ${PAIRS_PER_TEAM} cặp`} a={third.a} b={third.b} note={note(third)} /></div>
         </div>
       </div>
     </section>
@@ -965,7 +1094,7 @@ function Admin({ matches, players, onClose, onApply, onReset }) {
           <button type="button" className="icon-btn" onClick={onClose} aria-label="Đóng khu vực Ban Tổ chức"><X size={20} /></button>
         </div>
         <p className="admin-lead">Tải file mẫu về, điền tiếp rồi tải lên. Sheet <b>“Vận động viên”</b> gồm cột Trình (A–D), Họ tên, Phòng ban, Vai trò (ghi <b>Đội trưởng</b> cho 5 đội trưởng) và Đội (Đội 1–Đội 5, để trống tới khi chia đội).
-          Sheet <b>“Lịch thi đấu”</b> đã có sẵn {EVENT.matchTotal} mã trận, lượt và sân; chỉ cần điền Đội 1, Đội 2, Giờ, Tỉ số, Trạng thái.
+          Sheet <b>“Lịch thi đấu”</b> đã có sẵn {EVENT.matchTotal} trận (mã trận, lượt, sân, cặp, hai đội); chỉ cần điền Giờ, Tỉ số, Trạng thái.
           Nhập tỉ số dạng <b>11-8</b> và đặt định dạng ô là Text để Excel không tự đổi thành ngày.</p>
 
         <label className={'dropzone' + (drag ? ' is-drag' : '')}
@@ -1011,6 +1140,7 @@ function App() {
     return [...set].sort(byNumeric);
   }, [matches]);
   const standings = useMemo(() => computeStandings(matches, teams), [matches, teams]);
+  const view = useMemo(() => withPlayoffTeams(matches, standings), [matches, standings]);
 
   const openAdmin = () => {
     setAdminOpen(true);
@@ -1036,12 +1166,12 @@ function App() {
       <Header active={active} />
       <main>
         <Hero />
-        <Register registered={players.length} />
+        <Register players={players} />
         <Players players={players} />
         <Timeline />
-        <MatchCenter matches={matches} onOpenAdmin={openAdmin} />
-        <Standings standings={standings} teams={teams} matches={matches} />
-        <Bracket matches={matches} standings={standings} />
+        <MatchCenter matches={view} onOpenAdmin={openAdmin} />
+        <Standings standings={standings} teams={teams} matches={view} />
+        <Bracket matches={view} standings={standings} />
         <Rules />
         <Awards />
         <Cheer />

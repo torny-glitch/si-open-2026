@@ -266,16 +266,9 @@ a { color: inherit; }
 .teams-strip { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line-strong); display: grid; grid-template-columns: 1fr; gap: 20px; }
 .team-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; align-items: stretch; }
 .tcard { display: flex; flex-direction: column; gap: 10px; padding: 16px; background: var(--paper); border: 1px solid var(--line); border-top: 4px solid var(--blue); border-radius: var(--radius); }
-.tcard header { display: flex; align-items: baseline; gap: 8px; }
+.tcard header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
 .tcard h4 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 26px; line-height: 1.2; }
 .team-no { font-family: var(--font-display); font-weight: 800; font-size: 44px; line-height: 1; color: var(--blue); }
-.tcap { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px 12px; border-radius: 8px; background: var(--navy); color: #fff; font-size: 15px; font-weight: 600; line-height: 1.3; }
-.tcap small { font-size: 12px; font-weight: 400; color: var(--on-dark); }
-.badge { padding: 2px 10px; border-radius: 999px; background: var(--yellow); color: var(--navy); font-size: 12px; font-weight: 700; }
-.tmembers { font-size: 13.5px; color: var(--muted); }
-.tmembers b { color: var(--ink); }
-.tlist { display: grid; gap: 4px; font-size: 14px; }
-.tlist li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-top: 4px; border-top: 1px solid var(--line); }
 .lv { flex-shrink: 0; min-width: 22px; padding: 0 6px; border-radius: 999px; background: var(--blue-wash); color: var(--blue-ink); font-style: normal; font-size: 11px; font-weight: 700; line-height: 20px; text-align: center; }
 @media (max-width: 900px) { .teams-strip { grid-template-columns: 1fr; } }
 
@@ -523,3 +516,25 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ---------- Thẻ đội: tổng ở đầu, toàn bộ thành viên bên dưới ---------- */
+.tcount { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tguest { padding: 2px 10px; border-radius: 999px; background: var(--pink); color: #fff; font-size: 12px; font-weight: 700; }
+.tcard.is-guest { border-top-color: var(--pink); }
+.tlist { display: grid; gap: 4px; }
+.tlist li { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 36px; padding: 5px 8px; border-radius: 8px; background: var(--cream); font-size: 14px; }
+.tlist li.is-empty { justify-content: flex-start; background: transparent; border: 1.5px dashed var(--line-strong); color: var(--muted); font-size: 13px; }
+.tname { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; min-width: 0; line-height: 1.25; font-weight: 500; }
+.dt { flex-shrink: 0; padding: 0 6px; border-radius: 999px; background: var(--yellow); color: var(--navy); font-size: 11px; font-weight: 700; line-height: 18px; text-decoration: none; }
+.level-count.is-full { color: #0c7a4b; }
+.mpair { font-size: 12.5px; font-weight: 600; color: var(--blue-ink); margin-top: -4px; }
+.tmeta { display: flex; align-items: center; flex-shrink: 0; gap: 4px; }
+
+/* ---------- Đối đầu & tranh hạng ---------- */
+.cell-part { background: var(--blue-wash); font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1.2; }
+.cell-part span { display: block; font: 400 12px var(--font-body); color: var(--muted); }
+.cross .cell-score.is-win { background: var(--blue); color: #fff; }
+.cross .cell-score.is-win span { color: var(--on-dark); }
+.bk-note { margin-top: 8px; font-size: 13px; color: var(--muted); }
+.level-list .is-guest .pdept { color: var(--pink); font-weight: 600; }
+.level-list .is-guest { box-shadow: inset 3px 0 0 var(--pink); }

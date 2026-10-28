@@ -31,10 +31,17 @@ Mở `src/main.jsx`, sửa khối `EVENT` ở đầu file: ngày, giờ, địa 
 hạn chót (`registerDeadline`, để trống thì không hiển thị), số VĐV, số sân, số trận.
 Điền `startISO` để bật đồng hồ đếm ngược (để `''` nếu muốn tắt).
 
-Danh sách VĐV: sửa `DEFAULT_PLAYERS` (Trình A–D, Họ tên, Phòng ban, Vai trò, Đội). 5 đội trưởng là 5 người Trình A.
-Lịch thi đấu: mã trận M01–M50 = (lượt − 1) × 5 + sân. Điền tên đội, giờ, tỉ số vào `DEFAULT_MATCHES`
-hoặc dùng **Khu vực BTC** (liên kết ở chân trang) để nạp file Excel hai sheet `Lịch thi đấu` và `Vận động viên`.
-Bảng xếp hạng, bảng chéo và nhánh đấu tự tính từ cột `Tỉ số` (dạng `11-8`).
+Danh sách VĐV: sửa `DEFAULT_PLAYERS` (Trình A–D, Họ tên, Phòng ban, Vai trò, Đội). Đội 5 là đội khách mời (8 người, không thuộc 4 trình).
+Số suất mỗi trình: `LEVEL_SLOTS` (10 = 8 nội bộ + 2 khách mời). Khách mời có Đội = `Đội 5`, phòng ban ghi “Khách mời”.
+
+Lịch thi đấu: `SCHEDULE` gồm 40 trận, mỗi dòng là `[lượt, sân, đội, đội, cặp]`. Mỗi lượt 5 trận trên 5 sân,
+đội nào cũng có 2 cặp thi đấu, Sân 1 luôn là cặp 1 (hạng 1–2). Mã trận M01–M40 = (lượt − 1) × 5 + sân.
+Giờ, tỉ số, trạng thái nhập qua **Khu vực BTC** (liên kết ở chân trang) bằng file Excel hai sheet `Lịch thi đấu` và `Vận động viên`
+(nút “Tải file mẫu” xuất sẵn dữ liệu hiện tại).
+Ngoài 40 trận vòng tròn còn 8 trận tranh hạng (TB1–TB4 tranh giải Ba, CK1–CK4 chung kết, mỗi trận đủ 4 cặp trên Sân 1–4).
+Bảng xếp hạng, bảng chéo và nhánh đấu tự tính từ cột `Tỉ số` (dạng `11-8`): hai đội gặp nhau 4 trận, thắng nhiều trận hơn thì thắng đối đầu,
+nếu 2–2 thì xét tổng điểm ghi được; xếp hạng theo số lần thắng đối đầu, rồi số trận thắng, rồi hiệu số điểm.
+Khi vòng tròn kết thúc, tên đội ở các trận tranh hạng tự điền theo bảng xếp hạng.
 
 Dữ liệu nạp qua Khu vực BTC chỉ lưu trong trình duyệt của người nạp, không hiển thị cho khách khác.
 Muốn công khai: sửa dữ liệu trong mã nguồn rồi triển khai lại, hoặc nối cơ sở dữ liệu.
