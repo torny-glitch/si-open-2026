@@ -36,7 +36,7 @@ const EVENT = {
   matchTotal: 40                    // 10 lượt gặp nhau × 4 cặp = 40 trận = 8 lượt × 5 sân
 };
 const TEAM_SIZE = EVENT.playerTarget / EVENT.teamCount;   // 8 người mỗi đội
-const PAIRS_PER_TEAM = TEAM_SIZE / 2;                      // 4 cặp: hạng 1–2, 3–4, 5–6, 7–8
+const PAIRS_PER_TEAM = TEAM_SIZE / 2;                      // 4 cặp theo trình: A+A, B+B, C+C, C/D+D
 const MATCHES_PER_TEAM = Math.round((EVENT.matchTotal * 2) / EVENT.teamCount);
 
 const MAPS_URL = 'https://www.google.com/maps/search/?api=1&query=' +
@@ -51,7 +51,9 @@ const LEVEL_SLOTS = { A: 10, B: 10, C: 10, D: 10 };
 const INTERNAL_TARGET = INTERNAL_PER_LEVEL * LEVELS.length;   // 32 người nội bộ
 const TEAMS = Array.from({ length: EVENT.teamCount }, (_, i) => `Đội ${i + 1}`);
 const ROUNDS = Math.ceil(EVENT.matchTotal / EVENT.courtCount);
-const pairLabel = n => `Cặp ${n} · hạng ${2 * n - 1}–${2 * n}`;
+// Thành phần từng cặp theo trình (hạng 1–2, 3–4, 5–6, 7–8 trong đội)
+const PAIR_TYPES = ['A + A', 'B + B', 'C + C', 'C/D + D'];
+const pairLabel = n => `Cặp ${n} · ${PAIR_TYPES[n - 1] || `hạng ${2 * n - 1}–${2 * n}`}`;
 
 const NAV = [
   ['doi-thi', 'Vận động viên'],
@@ -102,12 +104,13 @@ const RULES = [
     title: 'Ghép cặp và xếp sân',
     body: (
       <>
-        <p>Mỗi đội xếp {TEAM_SIZE} người theo thứ tự trình độ từ 1 đến {TEAM_SIZE}, ghép thành {PAIRS_PER_TEAM} cặp. Cặp nào gặp cặp tương ứng của đội kia;
-          ví dụ cặp 1 của Đội 1 gặp cặp 1 của Đội 2.</p>
+        <p>Mỗi đội xếp {TEAM_SIZE} người theo thứ tự trình độ từ 1 đến {TEAM_SIZE}, ghép thành {PAIRS_PER_TEAM} cặp: hạng 1–2 là hai người Trình A,
+          hạng 3–4 là hai người Trình B, hạng 5–6 là hai người Trình C, hạng 7–8 gồm một người Trình C hoặc D và một người Trình D.
+          Cặp nào gặp cặp tương ứng của đội kia; ví dụ cặp 1 của Đội 1 gặp cặp 1 của Đội 2.</p>
         <ul className="chips-static">
           {Array.from({ length: PAIRS_PER_TEAM }, (_, i) => <li key={i}>{pairLabel(i + 1)}</li>)}
         </ul>
-        <p>Mỗi lượt có {EVENT.courtCount} trận trên {EVENT.courtCount} sân: đội nào cũng có 2 cặp thi đấu, và Sân 1 luôn là trận của cặp 1 (hạng 1–2).</p>
+        <p>Mỗi lượt có {EVENT.courtCount} trận trên {EVENT.courtCount} sân: đội nào cũng có 2 cặp thi đấu, và Sân 1 luôn là trận của cặp 1 (A + A).</p>
       </>
     )
   },
@@ -157,7 +160,7 @@ const RULES = [
  *  2. DỮ LIỆU MẶC ĐỊNH (có thể thay bằng file Excel ở Khu vực BTC)
  * ------------------------------------------------------------------ */
 // Lịch 40 trận do Ban Tổ chức duyệt: [lượt, sân, đội, đội, cặp].
-// Mỗi lượt 5 trận trên 5 sân; đội nào cũng có 2 cặp thi đấu; Sân 1 luôn là cặp 1 (hạng 1–2).
+// Mỗi lượt 5 trận trên 5 sân; đội nào cũng có 2 cặp thi đấu; Sân 1 luôn là cặp 1 (A + A).
 // Mã trận M = (lượt − 1) × 5 + sân. Cặp k của đội này gặp cặp k của đội kia.
 const SCHEDULE = [
   [1,1,1,3,1],[1,2,1,4,2],[1,3,2,5,2],[1,4,2,4,3],[1,5,3,5,4],
@@ -788,7 +791,7 @@ function MatchCenter({ matches, onOpenAdmin }) {
     <section className="section" id="lich">
       <div className="container">
         <SectionHead title="Tìm trận của bạn trong vài giây"
-          lead={`Gõ mã trận (M17), mã sân (S2), lượt (L4) hoặc lọc theo đội, theo cặp. ${EVENT.courtCount} sân thi đấu song song, mỗi lượt ${EVENT.courtCount} trận và Sân 1 luôn là trận của cặp hạng 1–2.`}
+          lead={`Gõ mã trận (M17), mã sân (S2), lượt (L4) hoặc lọc theo đội, theo cặp. ${EVENT.courtCount} sân thi đấu song song, mỗi lượt ${EVENT.courtCount} trận và Sân 1 luôn là trận của cặp A + A.`}
           aside={<p className="count"><b>{pad(matches.length)}</b> trận<br />{matches.filter(x => !isPlayoff(x)).length} vòng tròn + {matches.filter(isPlayoff).length} tranh hạng</p>} />
 
         <div className="toolbar">
