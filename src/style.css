@@ -538,3 +538,10 @@ a { color: inherit; }
 .bk-note { margin-top: 8px; font-size: 13px; color: var(--muted); }
 .level-list .is-guest .pdept { color: var(--pink); font-weight: 600; }
 .level-list .is-guest { box-shadow: inset 3px 0 0 var(--pink); }
+
+/* ---------- Thẻ trận có tên cặp ---------- */
+.mteam { display: block; padding: 8px 10px; }
+.mteam-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.mpeople { display: grid; gap: 1px; margin: 3px 0 0; font-size: 12.5px; font-weight: 400; line-height: 1.35; color: var(--muted); }
+.mteam.is-win .mpeople { color: var(--on-dark); }
+.register-grid.is-full { grid-template-columns: 1fr; }

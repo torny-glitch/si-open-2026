@@ -32,7 +32,8 @@ hạn chót (`registerDeadline`, để trống thì không hiển thị), số V
 Điền `startISO` để bật đồng hồ đếm ngược (để `''` nếu muốn tắt).
 
 Danh sách VĐV: sửa `DEFAULT_PLAYERS` (Trình A–D, Họ tên, Phòng ban, Vai trò, Đội). Đội 5 là đội khách mời (8 người, không thuộc 4 trình).
-Số suất mỗi trình: `LEVEL_SLOTS` (10 = 8 nội bộ + 2 khách mời). Khách mời có Đội = `Đội 5`, phòng ban ghi “Khách mời”.
+Cấu trúc mỗi đội (2 Trình A, 2 Trình B, 2 Trình C, 1 Trình C/D, 1 Trình D) nằm ở `TEAM_SLOTS`; suất còn trống tự tính từ đó.
+Khách mời có Đội = `Đội 5`, phòng ban ghi “Khách mời”.
 
 Lịch thi đấu: `SCHEDULE` gồm 40 trận, mỗi dòng là `[lượt, sân, đội, đội, cặp]`. Mỗi lượt 5 trận trên 5 sân,
 đội nào cũng có 2 cặp thi đấu, Sân 1 luôn là cặp 1 (A + A). Các cặp theo trình: A + A, B + B, C + C, C/D + D. Mã trận M01–M40 = (lượt − 1) × 5 + sân.
