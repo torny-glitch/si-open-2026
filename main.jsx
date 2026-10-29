@@ -45,10 +45,9 @@ const MAPS_URL = 'https://www.google.com/maps/search/?api=1&query=' +
 const pad = n => String(n).padStart(2, '0');
 
 const LEVELS = ['A', 'B', 'C', 'D'];
-// Mỗi trình có 10 suất: 8 cho 4 đội nội bộ (2 người/đội) + 2 cho đội khách mời. Sửa tại đây khi Ban Tổ chức đổi hạn mức.
-const INTERNAL_PER_LEVEL = 8;
-const LEVEL_SLOTS = { A: 10, B: 10, C: 10, D: 10 };
-const INTERNAL_TARGET = INTERNAL_PER_LEVEL * LEVELS.length;   // 32 người nội bộ
+// Cấu trúc 8 người của mỗi đội theo hạng 1–8 (cặp A+A, B+B, C+C, C/D+D). Dùng để tính suất còn trống.
+const TEAM_SLOTS = ['A', 'A', 'B', 'B', 'C', 'C', 'C/D', 'D'];
+const INTERNAL_TARGET = (EVENT.teamCount - 1) * TEAM_SIZE;   // 32 người nội bộ
 const TEAMS = Array.from({ length: EVENT.teamCount }, (_, i) => `Đội ${i + 1}`);
 const ROUNDS = Math.ceil(EVENT.matchTotal / EVENT.courtCount);
 // Thành phần từng cặp theo trình (hạng 1–2, 3–4, 5–6, 7–8 trong đội)
@@ -89,8 +88,8 @@ const RULES = [
     title: 'Thành phần đội',
     body: (
       <p>Tổng cộng {EVENT.playerTarget} vận động viên, chia thành {EVENT.teamCount} đội, mỗi đội {TEAM_SIZE} người, trong đó có 1 đội khách mời.
-        {' '}{INTERNAL_TARGET} vận động viên nội bộ chia thành {LEVELS.length} trình ({LEVELS[0]}–{LEVELS[LEVELS.length - 1]}), mỗi trình {INTERNAL_TARGET / LEVELS.length} suất;
-        đội trưởng các đội nội bộ là vận động viên Trình A. Đội khách mời cũng được xếp trình.</p>
+        {' '}Vận động viên được xếp {LEVELS.length} trình ({LEVELS[0]}–{LEVELS[LEVELS.length - 1]}); mỗi đội gồm 2 người Trình A, 2 người Trình B, 2 người Trình C,
+        1 người Trình D và 1 người Trình C hoặc D. Đội trưởng các đội nội bộ là vận động viên Trình A.</p>
     )
   },
   {
@@ -191,6 +190,7 @@ const P = (level, name, dept = '', team = '', captain = false) => ({
   'Trình': level, 'Họ tên': name, 'Phòng ban': dept, 'Vai trò': captain ? 'Đội trưởng' : '', 'Đội': team
 });
 // Thứ tự trong từng trình theo bảng chia trình của Ban Tổ chức. Đội trưởng = người Trình A; Đội 5 là đội khách mời.
+const GUEST = 'Khách mời';
 const DEFAULT_PLAYERS = [
   P('A', 'Nguyễn Hữu Nghị', 'DigiLenO', 'Đội 1', true),
   P('A', 'Phạm Hồng Phúc', 'UC RB', 'Đội 1'),
@@ -198,8 +198,10 @@ const DEFAULT_PLAYERS = [
   P('A', 'Hà Duyên Tiến', 'UC EB', 'Đội 3'),
   P('A', 'Lê Trọng Tú', 'Agile', 'Đội 4', true),
   P('A', 'Trần Anh Kiên', 'DC', 'Đội 4'),
-  P('A', 'Nguyễn Thanh Sơn', 'DC', 'Đội 2'),
+  P('A', 'Nguyễn Vũ Hải', 'DC Ops', 'Đội 2'),
   P('A', 'Trần Trung Hiếu', 'DC', 'Đội 2', true),
+  P('A', 'Vũ Ngọc Kỳ', GUEST, 'Đội 5'),
+  P('A', 'Nguyễn Đức Thắng', GUEST, 'Đội 5'),
 
   P('B', 'Nghiêm An Việt', 'DigiLenO', 'Đội 1'),
   P('B', 'Nguyễn Mạnh Tuấn', 'Squad CMB - dự án Digi Leno', 'Đội 1'),
@@ -207,25 +209,29 @@ const DEFAULT_PLAYERS = [
   P('B', 'Nguyễn Hai Long', 'DC Ops', 'Đội 4'),
   P('B', 'Nguyễn Duy Minh Vũ', 'CM', 'Đội 3'),
   P('B', 'Lê Thanh Tuấn', 'PMO / dự án DigilenO', 'Đội 3'),
+  P('B', 'Nguyễn Thanh Sơn', 'DC', 'Đội 2'),
   P('B', 'Đinh Anh Tú', 'DC', 'Đội 2'),
-  P('B', 'Trần Trung Anh', 'DC', 'Đội 2'),
+  P('B', 'Vũ Hồng Minh', GUEST, 'Đội 5'),
 
   P('C', 'Nguyễn Hương Lan', 'DigiLenO', 'Đội 1'),
   P('C', 'Vũ Thị Vân Anh', 'UCSL - UCRB', 'Đội 1'),
   P('C', 'Hà Thị Phương Thúy', 'Loyalty', 'Đội 3'),
   P('C', 'Hoàng Bích Phượng', 'Loyalty', 'Đội 3'),
   P('C', 'Thanh Hà RB', 'UC RB', 'Đội 4'),
-  P('C', 'Trương Thu Hằng', 'Khách mời', 'Đội 5'),
-  P('C', 'Lê Cường', 'DC', 'Đội 2'),
+  P('C', 'Lê Cường', 'DC', 'Đội 4'),
+  P('C', 'Trần Khắc Hiếu', GUEST + ' · IT', 'Đội 5'),
   P('C', 'Nguyễn Đăng Thiên', 'DC', 'Đội 2'),
   P('C', 'Nguyễn Lê Tới', 'DC', 'Đội 2'),
-  P('C', 'Văn Minh Phương', 'Khách mời', 'Đội 5'),
+  P('C', 'Nguyễn Thanh Tùng', GUEST, 'Đội 5'),
+  P('C', 'Trần Trung Anh', 'DC', 'Đội 2'),
 
   P('D', 'Bùi Minh Phương', 'UC EB', 'Đội 3'),
   P('D', 'Nguyễn Quốc Minh Nhật', 'SI DC', 'Đội 1'),
   P('D', 'Nguyễn Thị Loan', 'AI', 'Đội 3'),
   P('D', 'Nguyễn Ngọc Toàn', 'CM', 'Đội 4'),
-  P('D', 'Hoàng Thị Thu Trang', 'XP', 'Đội 2')
+  P('D', 'Hoàng Thị Thu Trang', 'XP', 'Đội 2'),
+  P('D', 'Trương Thu Hằng', GUEST, 'Đội 5'),
+  P('D', 'Văn Minh Phương', GUEST, 'Đội 5')
 ];
 
 const MATCH_COLS = ['Mã trận', 'Lượt', 'Mã sân', 'Cặp', 'Nội dung', 'Vòng', 'Giờ', 'Đội 1', 'Đội 2', 'Tỉ số', 'Trạng thái'];
@@ -234,7 +240,7 @@ const PLAYER_COLS = ['Trình', 'Họ tên', 'Phòng ban', 'Vai trò', 'Đội'];
 /* ------------------------------------------------------------------ *
  *  3. HÀM TIỆN ÍCH
  * ------------------------------------------------------------------ */
-const KEYS = { matches: 'siopen_matches_v8', players: 'siopen_players_v8' };
+const KEYS = { matches: 'siopen_matches_v8', players: 'siopen_players_v9' };
 const readSaved = (key, fallback) => {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
 };
@@ -255,9 +261,23 @@ const FINAL_RE = /tranh nhất|nhất\s*\/\s*nhì|chung kết/i;
 const THIRD_RE = /tranh (giải )?ba|ba\s*\/\s*tư|hạng ba/i;
 const isCaptain = p => p['Vai trò'] === 'Đội trưởng';
 const internalPlayers = list => list.filter(p => p['Đội'] !== EVENT.guestTeam);
-const openSlots = list => {
-  const inn = internalPlayers(list);
-  return LEVELS.map(l => [l, Math.max(0, INTERNAL_PER_LEVEL - inn.filter(p => p['Trình'] === l).length)]).filter(([, n]) => n > 0);
+// Ghép thành viên của một đội vào 8 vị trí A, A, B, B, C, C, C/D, D; trả về các vị trí còn trống
+const openTeamSlots = members => {
+  const left = [...TEAM_SLOTS];
+  const take = pred => { const i = left.findIndex(pred); if (i >= 0) left.splice(i, 1); };
+  [...members].sort((a, b) => LEVELS.indexOf(a['Trình']) - LEVELS.indexOf(b['Trình'])).forEach(m => {
+    const l = m['Trình'];
+    if (left.includes(l)) take(x => x === l); else take(x => x.includes(l));
+  });
+  return left;
+};
+const slotText = label => (label === 'C/D' ? 'Trình C hoặc D' : 'Trình ' + label);
+const openSlotList = list => TEAMS.flatMap(t =>
+  openTeamSlots(list.filter(p => p['Đội'] === t)).map(label => ({ team: t, label, guest: t === EVENT.guestTeam })));
+const summarizeSlots = slots => {
+  const m = new Map();
+  slots.forEach(x => m.set(x.label, (m.get(x.label) || 0) + 1));
+  return [...m].map(([l, n]) => `${slotText(l)}: ${n}`).join(' · ');
 };
 const isPlayoff = x => FINAL_RE.test(x['Vòng'] || '') || THIRD_RE.test(x['Vòng'] || '') || /xếp hạng|playoff/i.test(x['Vòng'] || '');
 
@@ -569,15 +589,15 @@ function Hero() {
 }
 
 function Register({ players }) {
-  const open = openSlots(players);
-  const left = open.reduce((a, [, n]) => a + n, 0);
+  const open = openSlotList(players).filter(x => !x.guest);
+  const left = open.length;
   return (
     <section className="register" id="dang-ky">
       <div className="container register-grid">
         <div>
           <h2>Quét QR, giữ ngay suất thi đấu</h2>
           {left > 0
-            ? <p>Còn <b>{left}</b> suất nội bộ ({open.map(([l, n]) => `Trình ${l}: ${n}`).join(' · ')}). Anh/chị/em đăng ký sớm nhé!</p>
+            ? <p>Còn <b>{left}</b> suất nội bộ ({summarizeSlots(open)}). Anh/chị/em đăng ký sớm nhé!</p>
             : <p>Danh sách đã đủ người. Cảm ơn anh/chị/em đã đăng ký!</p>}
           {EVENT.registerDeadline && <p className="register-deadline">Hạn chót đăng ký: <b>{EVENT.registerDeadline}</b></p>}
           <div className="register-actions">
@@ -619,8 +639,11 @@ function Players({ players }) {
     players.forEach(p => { (g[p['Trình']] || extra).push(p); });
     return { groups: g, unassigned: extra };
   }, [players]);
-  const open = openSlots(players);
-  const left = open.reduce((a, [, n]) => a + n, 0);
+  const slots = openSlotList(players);
+  const openInternal = slots.filter(x => !x.guest);
+  const openGuest = slots.filter(x => x.guest);
+  // Suất trống hiển thị trong cột trình; suất “C hoặc D” xếp vào cột D
+  const emptyByLevel = Object.fromEntries(LEVELS.map(l => [l, slots.filter(x => (x.label === 'C/D' ? 'D' : x.label) === l)]));
   const guestCount = players.length - inn.length;
   const percent = Math.min(100, Math.round((players.length / EVENT.playerTarget) * 100));
 
@@ -628,27 +651,28 @@ function Players({ players }) {
     <section className="section" id="doi-thi">
       <div className="container">
         <SectionHead title="Vận động viên theo trình"
-          lead={`${EVENT.playerTarget} vận động viên chia thành ${LEVELS.length} trình (A–D), mỗi trình ${LEVEL_SLOTS.A} suất gồm ${INTERNAL_PER_LEVEL} nội bộ và ${LEVEL_SLOTS.A - INTERNAL_PER_LEVEL} khách mời. Ô trống là những suất còn mở.`}
+          lead={`${EVENT.playerTarget} vận động viên chia thành ${LEVELS.length} trình (A–D). Mỗi đội ${TEAM_SIZE} người: 2 Trình A, 2 Trình B, 2 Trình C, 1 Trình D và 1 người Trình C hoặc D. Ô trống là những suất còn mở.`}
           aside={(
             <div className="progress">
               <p><b>{players.length}</b><span>/{EVENT.playerTarget} VĐV đã có tên</span></p>
               <div className="progress-track" role="progressbar" aria-valuemin={0} aria-valuemax={EVENT.playerTarget}
                    aria-valuenow={players.length} aria-label="Số vận động viên đã có tên"><i style={{ width: percent + '%' }} /></div>
               <small>Nội bộ {inn.length}/{INTERNAL_TARGET} · Khách mời {guestCount}/{TEAM_SIZE}<br />
-                {left > 0 ? `Còn ${left} suất nội bộ (${open.map(([l, n]) => `Trình ${l}: ${n}`).join(' · ')})` : 'Suất nội bộ đã đủ'}</small>
+                {openInternal.length > 0 ? `Còn ${openInternal.length} suất nội bộ (${summarizeSlots(openInternal)})` : 'Suất nội bộ đã đủ'}
+                {openGuest.length > 0 && <><br />{`Khách mời còn ${openGuest.length} suất (${summarizeSlots(openGuest)})`}</>}</small>
             </div>
           )} />
 
         <div className="levels">
           {LEVELS.map(l => {
             const members = groups[l];
-            const empty = Math.max(0, LEVEL_SLOTS[l] - members.length);
+            const empties = emptyByLevel[l];
             return (
               <article className="level" key={l}>
                 <header className="level-head">
                   <span className="level-letter" aria-hidden="true">{l}</span>
                   <h3>Trình {l}</h3>
-                  <span className={'level-count' + (empty === 0 ? ' is-full' : '')}>{members.length}/{LEVEL_SLOTS[l]}{empty === 0 ? ' · đủ' : ''}</span>
+                  <span className={'level-count' + (empties.length === 0 ? ' is-full' : '')}>{members.length}/{members.length + empties.length}{empties.length === 0 ? ' · đủ' : ''}</span>
                 </header>
                 <ol className="level-list">
                   {members.map((p, i) => (
@@ -657,7 +681,11 @@ function Players({ players }) {
                       {p['Phòng ban'] && <span className="pdept" title={p['Phòng ban']}>{p['Phòng ban']}</span>}
                     </li>
                   ))}
-                  {Array.from({ length: empty }, (_, i) => <li className="is-empty" key={'e' + i}><span>Còn trống</span></li>)}
+                  {empties.map((x, i) => (
+                    <li className="is-empty" key={'e' + i}>
+                      <span>Còn trống{x.label === 'C/D' ? ' · C hoặc D' : ''}{x.guest ? ' · khách mời' : ''}</span>
+                    </li>
+                  ))}
                 </ol>
               </article>
             );
@@ -686,7 +714,7 @@ function Players({ players }) {
               const all = players.filter(p => p['Đội'] === t).sort((a, b) =>
                 Number(isCaptain(b)) - Number(isCaptain(a))
                 || (LEVELS.indexOf(a['Trình']) + 1 || 99) - (LEVELS.indexOf(b['Trình']) + 1 || 99));
-              const rows = Array.from({ length: Math.max(TEAM_SIZE, all.length) }, (_, k) => all[k] || null);
+              const free = openTeamSlots(all);
               return (
                 <article className={'tcard' + (guest ? ' is-guest' : '')} key={t}>
                   <header>
@@ -696,7 +724,7 @@ function Players({ players }) {
                     <span className="tcount">{all.length}/{TEAM_SIZE}</span>
                   </header>
                   <ol className="tlist">
-                    {rows.map((m, k) => m ? (
+                    {all.map((m, k) => (
                       <li key={m['Họ tên'] + k}>
                         <span className="tname">{m['Họ tên']}</span>
                         <span className="tmeta">
@@ -704,8 +732,9 @@ function Players({ players }) {
                           {m['Trình'] && <i className="lv" title={'Trình ' + m['Trình']}>{m['Trình']}</i>}
                         </span>
                       </li>
-                    ) : (
-                      <li className="is-empty" key={'e' + k}>{guest ? 'Chờ công bố' : 'Còn trống'}</li>
+                    ))}
+                    {free.map((label, k) => (
+                      <li className="is-empty" key={'e' + k}>{guest ? 'Chờ công bố' : 'Còn trống'} · {slotText(label)}</li>
                     ))}
                   </ol>
                 </article>
