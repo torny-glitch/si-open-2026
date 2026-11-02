@@ -84,9 +84,16 @@ const RULES = [
     title: 'Đối tượng và thể thức chung',
     body: (
       <>
-        <p>5 đội thi đấu theo thể thức đồng đội, vòng tròn tính điểm 1 lượt giữa 5 đội: tổng cộng 10 cuộc đối đầu.</p>
-        <p>VĐV được xếp 4 trình A–B–C–D và chia thành 2 hạng thi đấu độc lập: <b>Hạng Nâng cao (AB)</b> gồm trình A và B,
-          <b> Hạng Phong trào (CD)</b> gồm trình C và D.</p>
+        <ul className="rule-list">
+          <li>5 đội thi đấu đồng đội theo thể thức vòng tròn tính điểm, mỗi cặp đội gặp nhau 1 lượt.</li>
+          <li>Tổng cộng 10 cuộc đối đầu, 40 trận vòng tròn.</li>
+          <li>VĐV được xếp 4 trình A, B, C, D và thi đấu theo 2 hạng độc lập:
+            <ul className="rule-sub">
+              <li><b>Hạng Nâng cao (AB):</b> trình A và B</li>
+              <li><b>Hạng Phong trào (CD):</b> trình C và D</li>
+            </ul>
+          </li>
+        </ul>
       </>
     )
   },
@@ -94,11 +101,14 @@ const RULES = [
     title: 'Cơ cấu mỗi cuộc đối đầu',
     body: (
       <>
-        <p>Mỗi cuộc đối đầu giữa 2 đội gồm 4 trận đánh đôi:</p>
-        <ul className="chips-static">
-          <li>Trận AB1 · đôi A</li><li>Trận AB2 · đôi B</li><li>Trận CD1 · đôi C</li><li>Trận CD2 · đôi D</li>
+        <p className="rule-label">Mỗi cuộc đối đầu gồm 4 trận đánh đôi:</p>
+        <ul className="rule-list">
+          <li><b>AB1:</b> đôi A của đội này gặp đôi A của đội kia</li>
+          <li><b>AB2:</b> đôi B của đội này gặp đôi B của đội kia</li>
+          <li><b>CD1:</b> đôi C của đội này gặp đôi C của đội kia</li>
+          <li><b>CD2:</b> đôi D của đội này gặp đôi D của đội kia</li>
         </ul>
-        <p>Tổng tỉ số tối đa của một cuộc đối đầu: 4–0, 3–1 hoặc 2–2.</p>
+        <p className="rule-label">Tổng tỉ số tối đa của một cuộc đối đầu: 4–0, 3–1 hoặc 2–2.</p>
       </>
     )
   },
@@ -106,10 +116,14 @@ const RULES = [
     title: 'Ghép cặp và line-up',
     body: (
       <>
-        <p>Mỗi đôi gồm 2 VĐV cùng trình trong đội (ví dụ đôi A-1 là 2 VĐV trình A của Đội 1). Trong cùng hạng AB hoặc CD, đội được tự điều chỉnh người giữa trình A–B và giữa trình C–D.</p>
-        <p>Đội trưởng nộp kín danh sách 4 đôi cho Ban Tổ chức trước mỗi cuộc đối đầu, để đảm bảo tính bất ngờ chiến thuật. Đội trưởng các đội 1–4 là VĐV trình A; Đội 5 do Trần Khắc Hiếu làm đội trưởng.</p>
-        <p>Trong cùng một khung giờ, mỗi VĐV chỉ được đăng ký thi đấu tối đa 1 trận.</p>
-        <p>Đội 5 (khách mời) có 12 người: trình B và trình D mỗi trình 4 người, chia thành 2 đôi luân phiên; mỗi đôi đấu 2 trận thay vì 4 trận vòng tròn.</p>
+        <ul className="rule-list">
+          <li>Mỗi đôi gồm 2 VĐV cùng trình trong đội. Ví dụ đôi A-1 là 2 VĐV trình A của Đội 1.</li>
+          <li>Trong cùng hạng AB hoặc CD, đội được tự điều chỉnh người giữa trình A–B và giữa trình C–D.</li>
+          <li>Trong cùng một khung giờ, mỗi VĐV chỉ đăng ký thi đấu tối đa 1 trận.</li>
+          <li>Đội trưởng nộp kín danh sách 4 đôi cho Ban Tổ chức trước mỗi cuộc đối đầu, để đảm bảo tính bất ngờ chiến thuật.</li>
+          <li>Đội trưởng các đội 1–4 là VĐV trình A. Đội 5 do Trần Khắc Hiếu làm đội trưởng.</li>
+          <li>Đội 5 (khách mời) có 12 người. Trình B và trình D mỗi trình có 4 người, chia thành 2 đôi luân phiên; mỗi đôi đấu 2 trận thay vì 4 trận.</li>
+        </ul>
       </>
     )
   },
@@ -117,9 +131,11 @@ const RULES = [
     title: 'Luật thi đấu và điểm số',
     body: (
       <>
-        <p>Vòng tròn: 1 set chạm 11 điểm, đổi sân ở điểm 6.</p>
-        <p>Chung kết và tranh 3–4: 1 set chạm 15 điểm, đổi sân ở điểm 8.</p>
-        <p>Áp dụng Rally Scoring hoặc Traditional Scoring theo thông báo đầu giải của Ban Tổ chức.</p>
+        <ul className="rule-list">
+          <li><b>Vòng tròn:</b> 1 set chạm 11 điểm, đổi sân ở điểm 6.</li>
+          <li><b>Chung kết và tranh 3–4:</b> 1 set chạm 15 điểm, đổi sân ở điểm 8.</li>
+          <li><b>Áp dụng Traditional Scoring:</b> chỉ bên đang giao bóng mới được tính điểm. Bên nhận giao bóng thắng pha bóng chỉ được giao bóng, không được cộng điểm.</li>
+        </ul>
       </>
     )
   },
@@ -127,14 +143,30 @@ const RULES = [
     title: 'Tính điểm xếp hạng đội',
     body: (
       <>
-        <p>Kết quả mỗi cuộc đối đầu: thắng 4–0 hoặc 3–1 được <b>3 điểm</b>; hoà 2–2 mỗi đội <b>1 điểm</b>; thua 1–3 hoặc 0–4 được <b>0 điểm</b>.</p>
-        <p>Khi bằng điểm, xét theo thứ tự: (1) hiệu số trận thắng – thua; (2) hiệu số điểm thắng – thua; (3) kết quả đối đầu trực tiếp.</p>
+        <p className="rule-label">Điểm của mỗi cuộc đối đầu:</p>
+        <ul className="rule-list">
+          <li>Thắng 4–0 hoặc 3–1: <b>3 điểm</b></li>
+          <li>Hoà 2–2: <b>1 điểm</b> cho mỗi đội</li>
+          <li>Thua 1–3 hoặc 0–4: <b>0 điểm</b></li>
+        </ul>
+        <p className="rule-label">Khi bằng điểm, xét theo thứ tự:</p>
+        <ol className="rule-list rule-list--num">
+          <li>Hiệu số trận thắng – thua</li>
+          <li>Hiệu số điểm thắng – thua</li>
+          <li>Kết quả đối đầu trực tiếp</li>
+        </ol>
       </>
     )
   },
   {
     title: 'Tranh hạng',
-    body: <p>Sau vòng tròn, hạng 1–2 đấu chung kết; hạng 3–4 đấu tranh giải Ba. Đội hạng 5 dừng bước.</p>
+    body: (
+      <ul className="rule-list">
+        <li>Hạng 1–2 đấu chung kết.</li>
+        <li>Hạng 3–4 đấu tranh giải Ba.</li>
+        <li>Đội hạng 5 dừng bước.</li>
+      </ul>
+    )
   }
 ];
 
@@ -155,7 +187,7 @@ const DEFAULT_PLAYERS = [
   P('A', 'Nguyễn Vũ Hải', 'DC', 2), P('A', 'Trần Trung Hiếu', 'Khách mời', 2, true),
   P('B', 'Đinh Anh Tú', 'DC', 2), P('B', 'Trần Trung Anh', 'DC', 2),
   P('C', 'Nguyễn Thanh Sơn', 'DC', 2), P('C', 'Nguyễn Đăng Thiên', 'DC', 2),
-  P('D', 'Nguyễn Lê Tới', 'DC', 2), P('D', 'Nguyễn Anh Tuấn', 'AI', 2),
+  P('D', 'Nguyễn Lê Tới', 'DC', 2), P('D', 'Ngô Việt Hoàng', 'DC', 2),
 
   P('A', 'Phan Khánh Toàn', 'Loyalty', 3, true), P('A', 'Hà Duyên Tiến', 'UC EB', 3),
   P('B', 'Nguyễn Duy Minh Vũ', 'CM', 3), P('B', 'Lê Thanh Tuấn', 'PMO / dự án DigilenO', 3),

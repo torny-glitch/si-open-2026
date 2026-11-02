@@ -545,3 +545,17 @@ a { color: inherit; }
 .mpeople { display: grid; gap: 1px; margin: 3px 0 0; font-size: 12.5px; font-weight: 400; line-height: 1.35; color: var(--muted); }
 .mteam.is-win .mpeople { color: var(--on-dark); }
 .register-grid.is-full { grid-template-columns: 1fr; }
+
+/* ---------- Thể lệ: gạch đầu dòng, khoảng cách dễ đọc ---------- */
+.rule-label { margin: 14px 0 8px; font-weight: 600; color: var(--ink); }
+.rule-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.rule-list > li { position: relative; padding-left: 20px; line-height: 1.6; }
+.rule-list > li::before { content: ''; position: absolute; left: 4px; top: .68em; width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
+.rule-list--num { counter-reset: rl; }
+.rule-list--num > li { counter-increment: rl; padding-left: 28px; }
+.rule-list--num > li::before { content: counter(rl) '.'; width: auto; height: auto; top: 0; left: 0; border-radius: 0; background: none; font-weight: 700; color: var(--blue-ink); }
+.rule-sub { margin-top: 6px; display: grid; gap: 6px; padding-left: 4px; }
+.rule-sub > li { position: relative; padding-left: 16px; }
+.rule-sub > li::before { content: '–'; position: absolute; left: 0; color: var(--blue-ink); }
+.rules details { padding-bottom: 0; }
+.rule-body { padding-bottom: 22px; }
