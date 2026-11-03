@@ -193,7 +193,7 @@ const DEFAULT_PLAYERS = [
   P('D', 'Nguyễn Thị Loan', 'DC', 3), P('D', 'Nguyễn Ngọc Toàn', 'DC', 3),
 
   P('A', 'Lê Trọng Tú', 'Loyalty', 4, true), P('A', 'Trần Anh Kiên', 'Khách mời', 4),
-  P('B', 'Chu Mạnh Quang', 'Agile', 4), P('B', 'Nguyễn Hai Long', 'AI', 4),
+  P('B', 'Chu Mạnh Quang', 'Agile', 4), P('B', 'Nguyễn Hai Long', 'DC Ops', 4),
   P('C', 'Nguyễn Thanh Tùng', 'Khách mời', 4), P('C', 'Nguyễn Thanh Hà', 'RB', 4),
   P('D', 'Nguyễn Văn Đạt', 'UC RB', 4), P('D', 'Dương Thùy Dung', 'UC RB', 4),
 
