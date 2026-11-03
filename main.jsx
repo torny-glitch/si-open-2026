@@ -177,32 +177,32 @@ const KEYS = { matches: 'siopen_v10_matches', players: 'siopen_v10_players' };
 // Đội trưởng là VĐV trình A của mỗi đội nội bộ.
 const P = (lvl, name, dept, team, captain = false) => ({ lvl, name, dept, team, captain });
 const DEFAULT_PLAYERS = [
-  P('A', 'Nguyễn Hữu Nghị', 'DigiLenO', 1, true), P('A', 'Phạm Hồng Phúc', 'Loyalty', 1),
-  P('B', 'Nguyễn Mạnh Tuấn', 'Squad CMB - dự án Digi Leno', 1), P('B', 'Nghiêm An Việt', 'DigiLenO', 1),
+  P('A', 'Nguyễn Hữu Nghị', 'DigiLenO', 1, true), P('A', 'Phạm Hồng Phúc', 'DigiLenO', 1),
+  P('B', 'Nguyễn Mạnh Tuấn', 'DigiLenO', 1), P('B', 'Nghiêm An Việt', 'DigiLenO', 1),
   P('C', 'Nguyễn Hương Lan', 'DigiLenO', 1), P('C', 'Vũ Thị Vân Anh', 'UCSL - UCRB', 1),
-  P('D', 'Lê Cường', 'CM', 1), P('D', 'Nguyễn Quốc Minh Nhật', 'DC Ops', 1),
+  P('D', 'Lê Cường', 'DC', 1), P('D', 'Nguyễn Quốc Minh Nhật', 'DC', 1),
 
-  P('A', 'Nguyễn Vũ Hải', 'DC', 2), P('A', 'Trần Trung Hiếu', 'Khách mời', 2, true),
-  P('B', 'Đinh Anh Tú', 'DC', 2), P('B', 'Trần Trung Anh', 'DC', 2),
-  P('C', 'Nguyễn Thanh Sơn', 'DC', 2), P('C', 'Nguyễn Đăng Thiên', 'DC', 2),
-  P('D', 'Nguyễn Lê Tới', 'DC', 2), P('D', 'Ngô Việt Hoàng', 'DC', 2),
+  P('A', 'Trần Trung Hiếu', 'DC', 2, true), P('A', 'Nguyễn Vũ Hải', 'DC', 2),
+  P('B', 'Đinh Anh Tú', 'DC', 2), P('B', 'Nguyễn Thanh Sơn', 'DC', 2),
+  P('C', 'Trần Trung Anh', 'DC', 2), P('C', 'Ngô Hoàng Việt', 'DC', 2),
+  P('D', 'Nguyễn Đăng Thiên', 'DC', 2), P('D', 'Nguyễn Lê Tới', 'DC', 2),
 
   P('A', 'Phan Khánh Toàn', 'Loyalty', 3, true), P('A', 'Hà Duyên Tiến', 'UC EB', 3),
-  P('B', 'Nguyễn Duy Minh Vũ', 'CM', 3), P('B', 'Lê Thanh Tuấn', 'PMO / dự án DigilenO', 3),
-  P('C', 'Hà Thị Phương Thúy', 'SI DC', 3), P('C', 'Hoàng Bích Phượng', '', 3),
-  P('D', 'Nguyễn Thị Loan', 'DC', 3), P('D', 'Nguyễn Ngọc Toàn', 'DC', 3),
+  P('B', 'Nguyễn Duy Minh Vũ', 'CM', 3), P('B', 'Lê Thanh Tuấn', 'DigiLenO', 3),
+  P('C', 'Hà Thị Phương Thúy', 'Loyalty', 3), P('C', 'Hoàng Bích Phượng', 'Loyalty', 3),
+  P('D', 'Nguyễn Thị Loan', 'AI', 3), P('D', 'Nguyễn Ngọc Toàn', 'CM', 3),
 
-  P('A', 'Lê Trọng Tú', 'Loyalty', 4, true), P('A', 'Trần Anh Kiên', 'Khách mời', 4),
+  P('A', 'Lê Trọng Tú', 'Agile', 4, true), P('A', 'Trần Anh Kiên', '', 4),
   P('B', 'Chu Mạnh Quang', 'Agile', 4), P('B', 'Nguyễn Hai Long', 'DC Ops', 4),
-  P('C', 'Nguyễn Thanh Tùng', 'Khách mời', 4), P('C', 'Nguyễn Thanh Hà', 'RB', 4),
+  P('C', 'Nguyễn Thanh Tùng', 'Khách mời', 4), P('C', 'Nguyễn Thanh Hà', 'DigiLenO', 4),
   P('D', 'Nguyễn Văn Đạt', 'UC RB', 4), P('D', 'Dương Thùy Dung', 'UC RB', 4),
 
   P('A', 'Vũ Ngọc Kỳ', 'Khách mời', 5), P('A', 'Nguyễn Đức Thắng', 'Khách mời', 5),
-  P('B', 'Vũ Hồng Minh', 'Khách mời', 5), P('B', 'Trần Khắc Hiếu', 'Khách mời', 5, true),
-  P('B', 'Dương Hoàng Long', 'Khách mời', 5), P('B', 'Phạm Văn Thắng', 'Khách mời', 5),
+  P('B', 'Vũ Hồng Minh', 'Khách mời', 5), P('B', 'Trần Khắc Hiếu', 'Khách mời', 5),
+  P('B', 'Dương Hoàng Long', 'Khách mời', 5, true), P('B', 'Phạm Văn Thắng', 'Khách mời', 5),
   P('C', 'Nguyễn Hoàng Thái', 'Khách mời', 5), P('C', 'Hoàng Ngọc Thắng', 'Khách mời', 5),
-  P('D', 'Bùi Thế Anh', 'Khách mời', 5), P('D', 'Trương Thu Hằng', 'Khách mời', 5),
-  P('D', 'Văn Minh Phương', 'Khách mời', 5), P('D', 'Nguyễn Thị Nhàn', 'Khách mời', 5)
+  P('D', 'Trương Thu Hằng', 'Khách mời', 5), P('D', 'Văn Minh Phương', 'Khách mời', 5),
+  P('D', 'Nguyễn Thị Nhàn', 'Khách mời', 5), P('D', 'Bùi Thế Anh', 'Khách mời', 5)
 ];
 
 // Lịch 40 trận vòng tròn: [giờ, sân, hạng, số trận trong hạng, đội 1, đội 2]. Mỗi cặp đội có AB-1, AB-2, CD-1, CD-2.
@@ -526,7 +526,7 @@ function Players({ players }) {
     <section className="section" id="doi-thi">
       <div className="container">
         <SectionHead title="Vận động viên và đội thi đấu"
-          lead="Mỗi đội nội bộ có 8 người: 2 VĐV mỗi trình A, B, C, D. Đội 5 là đội khách mời 12 người, trình B và D mỗi trình có 4 người chia thành 2 đôi luân phiên."
+          lead="44 vận động viên chia theo 4 trình A–D. Đội 1–4 mỗi đội 8 người, Đội 5 là đội khách mời 12 người. Chữ cái bên cạnh tên là trình."
           aside={(
             <div className="progress">
               <p><b>{players.length}</b><span>/44 VĐV trong danh sách</span></p>
@@ -563,7 +563,7 @@ function Players({ players }) {
         <div className="teams-strip">
           <div>
             <h3 className="subhead">Chia đội</h3>
-            <p className="subnote">Đội 1–4 là đội nội bộ, mỗi đội 8 người. Đội 5 là đội khách mời 12 người. Chữ cái là trình của từng người.</p>
+            <p className="subnote">Đội 1–4 là đội nội bộ, mỗi đội 8 người. Đội 5 là đội khách mời 12 người.</p>
           </div>
           <div className="team-cards">
             {TEAMS.map(t => {
