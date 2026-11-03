@@ -64,8 +64,9 @@ const NAV = [
 const TIMELINE = [
   ['06:30', 'Chuẩn bị', 'Chuẩn bị hậu cần', 'Ban Tổ chức chuẩn bị sân bãi và dụng cụ.'],
   ['07:00', 'Khai mạc', 'Check-in, khai mạc và phổ biến thể lệ', 'Ổn định đội hình, phổ biến quy định thi đấu.'],
-  ['07:30', 'Vòng tròn', 'Thi đấu vòng tròn', '40 trận trong 8 khung giờ, 5 sân thi đấu song song.'],
-  ['11:30', 'Chung kết', 'Chung kết và tranh 3–4', 'Hạng 1–2 đấu chung kết, hạng 3–4 đấu tranh giải Ba.'],
+  ['07:30', 'Vòng tròn', 'Thi đấu vòng tròn', '40 trận trong 7 khung giờ, 6 sân thi đấu song song.'],
+  ['11:00', 'Tranh 3–4', 'Tranh giải Ba', 'Hạng 3–4 đấu tranh giải Ba, 4 hạng trên sân 16–19.'],
+  ['11:30', 'Chung kết', 'Chung kết', 'Hạng 1–2 đấu chung kết, 4 hạng trên sân 16–19.'],
   ['12:00', 'Trao giải', 'Trao giải và lucky draw', 'Kết thúc chương trình.']
 ];
 
@@ -103,10 +104,8 @@ const RULES = [
       <>
         <p className="rule-label">Mỗi cuộc đối đầu gồm 4 trận đánh đôi:</p>
         <ul className="rule-list">
-          <li><b>AB1:</b> đôi A của đội này gặp đôi A của đội kia</li>
-          <li><b>AB2:</b> đôi B của đội này gặp đôi B của đội kia</li>
-          <li><b>CD1:</b> đôi C của đội này gặp đôi C của đội kia</li>
-          <li><b>CD2:</b> đôi D của đội này gặp đôi D của đội kia</li>
+          <li><b>AB-1 và AB-2:</b> 2 trận hạng Nâng cao</li>
+          <li><b>CD-1 và CD-2:</b> 2 trận hạng Phong trào</li>
         </ul>
         <p className="rule-label">Tổng tỉ số tối đa của một cuộc đối đầu: 4–0, 3–1 hoặc 2–2.</p>
       </>
@@ -117,12 +116,11 @@ const RULES = [
     body: (
       <>
         <ul className="rule-list">
-          <li>Mỗi đôi gồm 2 VĐV cùng trình trong đội. Ví dụ đôi A-1 là 2 VĐV trình A của Đội 1.</li>
-          <li>Trong cùng hạng AB hoặc CD, đội được tự điều chỉnh người giữa trình A–B và giữa trình C–D.</li>
+          <li>Trong mỗi hạng, đội tự sắp đôi từ các VĐV thuộc hạng đó. Hạng AB gồm trình A và B, hạng CD gồm trình C và D.</li>
           <li>Trong cùng một khung giờ, mỗi VĐV chỉ đăng ký thi đấu tối đa 1 trận.</li>
           <li>Đội trưởng nộp kín danh sách 4 đôi cho Ban Tổ chức trước mỗi cuộc đối đầu, để đảm bảo tính bất ngờ chiến thuật.</li>
           <li>Đội trưởng các đội 1–4 là VĐV trình A. Đội 5 do Trần Khắc Hiếu làm đội trưởng.</li>
-          <li>Đội 5 (khách mời) có 12 người. Trình B và trình D mỗi trình có 4 người, chia thành 2 đôi luân phiên; mỗi đôi đấu 2 trận thay vì 4 trận.</li>
+          <li>Đội 5 (khách mời) có 12 người và thi đấu theo cùng lịch với các đội khác.</li>
         </ul>
       </>
     )
@@ -195,7 +193,7 @@ const DEFAULT_PLAYERS = [
   P('D', 'Nguyễn Thị Loan', 'DC', 3), P('D', 'Nguyễn Ngọc Toàn', 'DC', 3),
 
   P('A', 'Lê Trọng Tú', 'Loyalty', 4, true), P('A', 'Trần Anh Kiên', 'Khách mời', 4),
-  P('B', 'Chu Mạnh Quang', 'Agile', 4), P('B', 'Nguyễn Hai Long', 'AI', 4),
+  P('B', 'Chu Mạnh Quang', 'Agile', 4), P('B', 'Nguyễn Hai Long', 'DC Ops', 4),
   P('C', 'Nguyễn Thanh Tùng', 'Khách mời', 4), P('C', 'Nguyễn Thanh Hà', 'RB', 4),
   P('D', 'Nguyễn Văn Đạt', 'UC RB', 4), P('D', 'Dương Thùy Dung', 'UC RB', 4),
 
@@ -207,29 +205,63 @@ const DEFAULT_PLAYERS = [
   P('D', 'Văn Minh Phương', 'Khách mời', 5), P('D', 'Nguyễn Thị Nhàn', 'Khách mời', 5)
 ];
 
-// Lịch 40 trận vòng tròn: [giờ, sân, trình, đội 1, đội 2]. Trình A-1 nghĩa là đôi trình A của Đội 1.
+// Lịch 40 trận vòng tròn: [giờ, sân, hạng, số trận trong hạng, đội 1, đội 2]. Mỗi cặp đội có AB-1, AB-2, CD-1, CD-2.
+// Đội tự sắp đôi trong hạng AB hoặc CD. Tranh 3–4 lúc 11:00 và chung kết lúc 11:30, mỗi trận 4 hạng trên sân 16–19.
 const SCHEDULE = [
-  ['07:30',1,'A',1,2], ['07:30',2,'B',1,2], ['07:30',3,'C',1,2], ['07:30',4,'D',1,2], ['07:30',5,'A',3,4],
-  ['08:00',1,'B',3,4], ['08:00',2,'C',3,4], ['08:00',3,'D',3,4], ['08:00',4,'A',1,5], ['08:00',5,'B',1,5],
-  ['08:30',1,'C',1,5], ['08:30',2,'D',1,5], ['08:30',3,'A',2,3], ['08:30',4,'B',2,3], ['08:30',5,'C',2,3],
-  ['09:00',1,'D',2,3], ['09:00',2,'A',4,5], ['09:00',3,'B',4,5], ['09:00',4,'C',4,5], ['09:00',5,'D',4,5],
-  ['09:30',1,'A',1,3], ['09:30',2,'B',1,3], ['09:30',3,'C',1,3], ['09:30',4,'D',1,3], ['09:30',5,'A',2,4],
-  ['10:00',1,'B',2,4], ['10:00',2,'C',2,4], ['10:00',3,'D',2,4], ['10:00',4,'A',2,5], ['10:00',5,'A',1,4],
-  ['10:30',1,'C',2,5], ['10:30',2,'D',2,5], ['10:30',3,'B',2,5], ['10:30',4,'B',1,4], ['10:30',5,'C',1,4],
-  ['11:00',1,'D',1,4], ['11:00',2,'A',3,5], ['11:00',3,'B',3,5], ['11:00',4,'C',3,5], ['11:00',5,'D',3,5],
+  ['07:30', 12, 'AB', 1, 1, 2],
+  ['07:30', 15, 'AB', 2, 1, 2],
+  ['07:30', 16, 'CD', 1, 1, 2],
+  ['07:30', 17, 'CD', 2, 1, 2],
+  ['07:30', 18, 'AB', 1, 3, 4],
+  ['07:30', 19, 'AB', 2, 3, 4],
+  ['08:00', 12, 'CD', 1, 3, 4],
+  ['08:00', 15, 'CD', 2, 3, 4],
+  ['08:00', 16, 'CD', 1, 1, 5],
+  ['08:00', 17, 'CD', 2, 1, 5],
+  ['08:00', 18, 'AB', 1, 1, 5],
+  ['08:00', 19, 'AB', 2, 1, 5],
+  ['08:30', 12, 'AB', 1, 2, 3],
+  ['08:30', 15, 'AB', 2, 2, 3],
+  ['08:30', 16, 'CD', 1, 2, 3],
+  ['08:30', 17, 'CD', 2, 2, 3],
+  ['08:30', 18, 'AB', 1, 4, 5],
+  ['08:30', 19, 'AB', 2, 4, 5],
+  ['09:00', 12, 'CD', 1, 4, 5],
+  ['09:00', 15, 'CD', 2, 4, 5],
+  ['09:00', 16, 'AB', 1, 1, 3],
+  ['09:00', 17, 'AB', 2, 1, 3],
+  ['09:00', 18, 'CD', 1, 1, 3],
+  ['09:00', 19, 'CD', 2, 1, 3],
+  ['09:30', 12, 'AB', 1, 2, 4],
+  ['09:30', 15, 'AB', 2, 2, 4],
+  ['09:30', 16, 'CD', 1, 2, 4],
+  ['09:30', 17, 'CD', 2, 2, 4],
+  ['09:30', 18, 'AB', 1, 2, 5],
+  ['09:30', 19, 'AB', 2, 2, 5],
+  ['10:00', 12, 'CD', 1, 2, 5],
+  ['10:00', 15, 'CD', 2, 2, 5],
+  ['10:00', 16, 'AB', 1, 1, 4],
+  ['10:00', 17, 'AB', 2, 1, 4],
+  ['10:00', 18, 'CD', 1, 1, 4],
+  ['10:00', 19, 'CD', 2, 1, 4],
+  ['10:30', 12, 'AB', 1, 3, 5],
+  ['10:30', 15, 'AB', 2, 3, 5],
+  ['10:30', 16, 'CD', 1, 3, 5],
+  ['10:30', 17, 'CD', 2, 3, 5]
 ];
-
-// Trận vòng tròn + 8 trận tranh hạng (mỗi trận đủ 4 đôi A, B, C, D).
-// Đội của trận tranh hạng tự điền khi vòng tròn kết thúc theo bảng xếp hạng.
+const PLAYOFF_SLOTS = [['11:00', PH_THIRD], ['11:30', PH_FINAL]];
 const DEFAULT_MATCHES = [
-  ...SCHEDULE.map(([time, court, tier, t1, t2], i) => ({
-    id: 'M' + pad(i + 1), time, court, phase: PH_RR, tier, t1, t2, score: '', status: 'Dự kiến'
+  ...SCHEDULE.map(([time, court, tier, seq, t1, t2], i) => ({
+    id: 'M' + pad(i + 1), time, court, phase: PH_RR, tier, seq, t1, t2, score: '', status: 'Dự kiến'
   })),
-  ...LEVELS.map(tier => ({ id: 'CK-' + tier, time: '11:30', court: '', phase: PH_FINAL, tier, t1: null, t2: null, score: '', status: 'Dự kiến' })),
-  ...LEVELS.map(tier => ({ id: 'TB-' + tier, time: '11:30', court: '', phase: PH_THIRD, tier, t1: null, t2: null, score: '', status: 'Dự kiến' }))
+  ...PLAYOFF_SLOTS.flatMap(([time, phase]) => ['AB', 'CD'].flatMap(tier => [1, 2].map(seq => ({
+    id: (phase === PH_FINAL ? 'CK' : 'TB') + '-' + tier + seq, time,
+    court: 16 + ((tier === 'CD' ? 2 : 0) + seq - 1),
+    phase, tier, seq, t1: null, t2: null, score: '', status: 'Dự kiến'
+  }))))
 ];
 
-const MATCH_COLS = ['Mã trận', 'Giờ', 'Sân', 'Vòng', 'Trình', 'Đội 1', 'Đội 2', 'Tỉ số', 'Trạng thái'];
+const MATCH_COLS = ['Mã trận', 'Giờ', 'Sân', 'Vòng', 'Hạng', 'Đội 1', 'Đội 2', 'Tỉ số', 'Trạng thái'];
 const PLAYER_COLS = ['Trình', 'Họ tên', 'Phòng ban', 'Đội', 'Vai trò'];
 
 /* ------------------------------------------------------------------ *
@@ -257,12 +289,17 @@ const fmtTime = v => {
 const statusClass = s =>
   /đang/i.test(s || '') ? 'status status--live' : /kết thúc|hoàn thành|xong|đã có/i.test(s || '') ? 'status status--done' : 'status';
 
+const parseHang = v => {
+  const m = String(v ?? '').toUpperCase().match(/(AB|CD)\s*-?\s*(\d)/);
+  return m ? { tier: m[1], seq: Number(m[2]) } : { tier: '', seq: 0 };
+};
+const hangLabel = m => `${m.tier}-${m.seq}`;
 const normalizeMatch = r => ({
   id: String(r['Mã trận'] || '').trim(),
   time: fmtTime(r['Giờ']),
   court: toCourt(r['Sân']),
   phase: String(r['Vòng'] || PH_RR).trim(),
-  tier: String(r['Trình'] || '').trim().toUpperCase().slice(0, 1),
+  ...parseHang(r['Hạng']),
   t1: toTeam(r['Đội 1']),
   t2: toTeam(r['Đội 2']),
   score: String(r['Tỉ số'] ?? '').trim(),
@@ -456,7 +493,7 @@ function Hero() {
           <p className="hero-org">MSB · Strategy &amp; Innovation</p>
           <h1><span>Pickleball</span><span className="h1-band">SI Open 2026</span></h1>
           <p className="hero-tag">Bứt phá giới hạn – Gắn kết thành công</p>
-          <p className="hero-lead">5 đội, 44 vận động viên và 5 sân thi đấu song song. Cả Khối SI cùng đến cổ vũ cho đồng đội.</p>
+          <p className="hero-lead">5 đội, 44 vận động viên và 6 sân thi đấu song song. Cả Khối SI cùng đến cổ vũ cho đồng đội.</p>
           <div className="hero-actions">
             <a className="btn btn-accent" href="#lich">Tra cứu trận của bạn <ArrowUpRight size={18} aria-hidden="true" /></a>
             <a className="btn btn-ghost" href="#doi-thi">Danh sách VĐV</a>
@@ -474,7 +511,7 @@ function Hero() {
       <div className="facts-band">
         <dl className="container facts">
           <div><span className="fact-icon"><CalendarDays size={20} aria-hidden="true" /></span><div><dt>Thời gian</dt><dd>{EVENT.dateLabel}<small>{EVENT.timeLabel}</small></dd></div></div>
-          <div><span className="fact-icon"><Users size={20} aria-hidden="true" /></span><div><dt>Thể thức</dt><dd>5 đội · 44 VĐV<small>40 trận vòng tròn · 8 khung giờ</small></dd></div></div>
+          <div><span className="fact-icon"><Users size={20} aria-hidden="true" /></span><div><dt>Thể thức</dt><dd>5 đội · 44 VĐV<small>40 trận vòng tròn · 7 khung giờ</small></dd></div></div>
           <div><span className="fact-icon"><MapPin size={20} aria-hidden="true" /></span><div><dt>Địa điểm</dt><dd><a href={MAPS_URL} target="_blank" rel="noopener noreferrer">{EVENT.venue}</a><small>{EVENT.address}</small></dd></div></div>
           <div><span className="fact-icon"><Trophy size={20} aria-hidden="true" /></span><div><dt>Tổng giải thưởng</dt><dd>{EVENT.prizeTotal}</dd></div></div>
         </dl>
@@ -618,19 +655,16 @@ function MatchCard({ m }) {
         <strong className="mcode">{m.id}</strong>
         <span className="mcourt">{m.court ? `Sân ${m.court}` : 'Chưa xếp sân'}</span>
       </div>
-      <p className="mpair">{m.phase === PH_RR ? `Trình ${m.tier}` : `${m.phase} · trình ${m.tier}`}</p>
+      <p className="mpair">{m.phase === PH_RR ? `Hạng ${hangLabel(m)}` : `${m.phase} · hạng ${hangLabel(m)}`}</p>
       <div className="mcard-teams">
-        {sides.map((s, i) => {
-          const head = s.team ? LABEL(m.tier, s.team) : `Hạng ${s.seat ?? ''}`;
-          return (
-            <div key={i} className={'mteam' + (s.mine != null && s.mine > s.theirs ? ' is-win' : '')}>
-              <div className="mteam-head">
-                <span>{head}{s.team ? ` · ${teamName(s.team)}` : ''}</span>
-                <b>{s.mine ?? ''}</b>
-              </div>
-                    </div>
-          );
-        })}
+        {sides.map((s, i) => (
+          <div key={i} className={'mteam' + (s.mine != null && s.mine > s.theirs ? ' is-win' : '')}>
+            <div className="mteam-head">
+              <span>{s.team ? teamName(s.team) : `Hạng ${s.seat ?? ''}`}{s.team && isGuest(s.team) ? ' · khách mời' : ''}</span>
+              <b>{s.mine ?? ''}</b>
+            </div>
+          </div>
+        ))}
       </div>
       <div className="mcard-foot">
         <span className="mnote">{m.time}</span>
@@ -652,7 +686,7 @@ function MatchCenter({ view, onOpenAdmin }) {
       if (tier && m.tier !== tier) return false;
       if (!q) return true;
       const hay = [m.id, m.time, m.phase, m.court ? 'sân ' + m.court : '',
-        m.t1 ? LABEL(m.tier, m.t1) : '', m.t2 ? LABEL(m.tier, m.t2) : '',
+        hangLabel(m),
         m.t1 ? teamName(m.t1) : '', m.t2 ? teamName(m.t2) : ''].join(' ').toLowerCase();
       return hay.includes(q);
     });
@@ -673,23 +707,24 @@ function MatchCenter({ view, onOpenAdmin }) {
     <section className="section" id="lich">
       <div className="container">
         <SectionHead title="Lịch thi đấu"
-          lead="Đọc trận theo mã: A-1 là đôi trình A của Đội 1. Tìm theo tên VĐV, đội, trình hoặc sân."
+          lead="Mỗi cặp đội có 4 hạng: AB-1, AB-2 (Nâng cao) và CD-1, CD-2 (Phong trào). Tìm theo đội, hạng, mã trận hoặc sân."
           aside={<p className="count"><b>{pad(view.length)}</b> trận<br />40 vòng tròn + 8 tranh hạng</p>} />
 
         <div className="toolbar">
           <label className="search">
             <Search size={20} aria-hidden="true" />
             <span className="sr-only">Tìm trận đấu</span>
-            <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Đội, trình, mã trận hoặc sân…" />
+            <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Đội, hạng AB/CD, mã trận hoặc sân…" />
           </label>
           <div className="filters">
             <select aria-label="Lọc theo đội" value={team} onChange={e => setTeam(e.target.value)}>
               <option value="">Tất cả đội</option>
               {TEAMS.map(t => <option key={t} value={t}>{teamName(t)}{isGuest(t) ? ' (khách mời)' : ''}</option>)}
             </select>
-            <select aria-label="Lọc theo trình" value={tier} onChange={e => setTier(e.target.value)}>
-              <option value="">Tất cả trình</option>
-              {LEVELS.map(l => <option key={l} value={l}>Trình {l}</option>)}
+            <select aria-label="Lọc theo hạng" value={tier} onChange={e => setTier(e.target.value)}>
+              <option value="">Tất cả hạng</option>
+              <option value="AB">Hạng Nâng cao (AB)</option>
+              <option value="CD">Hạng Phong trào (CD)</option>
             </select>
             {hasFilter && <button type="button" className="link-btn" onClick={reset}><RotateCcw size={14} aria-hidden="true" /> Xoá bộ lọc</button>}
           </div>
@@ -841,9 +876,9 @@ function Bracket({ view, rows }) {
     <section className="section" id="nhanh">
       <div className="container">
         <SectionHead title="Con đường tới ngôi vô địch"
-          lead="Sau vòng tròn, hạng 3–4 đấu tranh giải Ba; hạng 1–2 đấu chung kết. Mỗi trận đủ 4 đôi, tên đội tự điền theo bảng xếp hạng." />
+          lead="Sau vòng tròn, hạng 3–4 đấu tranh giải Ba; hạng 1–2 đấu chung kết. Mỗi trận gồm 4 hạng, tên đội tự điền theo bảng xếp hạng." />
         <div className="bracket">
-          <BracketMatch title="Chung kết · 4 đôi" a={fin.a} b={fin.b}
+          <BracketMatch title="Chung kết · 4 hạng" a={fin.a} b={fin.b}
             note={fin.tie ? 'Tỉ số hoà 2–2: BTC quyết định thêm.' : null} />
           <span className="bk-link" aria-hidden="true" />
           <div className="bk-champ">
@@ -852,7 +887,7 @@ function Bracket({ view, rows }) {
             <span>{champion ? 'SI Open 2026' : 'Chờ trận chung kết'}</span>
           </div>
           <div className="bk-third">
-            <BracketMatch title="Tranh giải Ba · 4 đôi" a={third.a} b={third.b}
+            <BracketMatch title="Tranh giải Ba · 4 hạng" a={third.a} b={third.b}
               note={third.tie ? 'Tỉ số hoà 2–2: BTC quyết định thêm.' : null} />
           </div>
         </div>
@@ -976,7 +1011,7 @@ function Admin({ matches, players, onClose, onApply, onReset }) {
   const download = () => {
     const wb = XLSX.utils.book_new();
     const mRows = matches.map(m => ({
-      'Mã trận': m.id, 'Giờ': m.time, 'Sân': m.court, 'Vòng': m.phase, 'Trình': m.tier,
+      'Mã trận': m.id, 'Giờ': m.time, 'Sân': m.court, 'Vòng': m.phase, 'Hạng': hangLabel(m),
       'Đội 1': m.t1 ?? '', 'Đội 2': m.t2 ?? '', 'Tỉ số': m.score, 'Trạng thái': m.status
     }));
     const pRows = players.map(p => ({
