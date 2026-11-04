@@ -31,7 +31,7 @@ const EVENT = {
   teamCount: 5,
   guestTeam: 5,                            // Đội 5 là đội khách mời
   teamSize: 8,                             // đội nội bộ
-  guestSize: 12,                           // đội khách mời
+  guestSize: 11,                           // đội khách mời
   courtCount: 5
 };
 
@@ -120,7 +120,7 @@ const RULES = [
           <li>Trong cùng một khung giờ, mỗi VĐV chỉ đăng ký thi đấu tối đa 1 trận.</li>
           <li>Đội trưởng nộp kín danh sách 4 đôi cho Ban Tổ chức trước mỗi cuộc đối đầu, để đảm bảo tính bất ngờ chiến thuật.</li>
           <li>Đội trưởng các đội 1–4 là VĐV trình A. Đội 5 do Trần Khắc Hiếu làm đội trưởng.</li>
-          <li>Đội 5 (khách mời) có 12 người và thi đấu theo cùng lịch với các đội khác.</li>
+          <li>Đội 5 (khách mời) có 11 người và thi đấu theo cùng lịch với các đội khác.</li>
         </ul>
       </>
     )
@@ -201,7 +201,7 @@ const DEFAULT_PLAYERS = [
   P('B', 'Vũ Hồng Minh', 'Khách mời', 5), P('B', 'Trần Khắc Hiếu', 'Khách mời', 5),
   P('B', 'Dương Hoàng Long', 'Khách mời', 5, true), P('B', 'Phạm Văn Thắng', 'Khách mời', 5),
   P('C', 'Nguyễn Hoàng Thái', 'Khách mời', 5), P('C', 'Hoàng Ngọc Thắng', 'Khách mời', 5),
-  P('D', 'Trương Thu Hằng', 'Khách mời', 5), P('D', 'Văn Minh Phương', 'Khách mời', 5),
+  P('D', 'Văn Minh Phương', 'Khách mời', 5),
   P('D', 'Nguyễn Thị Nhàn', 'Khách mời', 5), P('D', 'Bùi Thế Anh', 'Khách mời', 5)
 ];
 
@@ -493,7 +493,7 @@ function Hero() {
           <p className="hero-org">MSB · Strategy &amp; Innovation</p>
           <h1><span>Pickleball</span><span className="h1-band">SI Open 2026</span></h1>
           <p className="hero-tag">Bứt phá giới hạn – Gắn kết thành công</p>
-          <p className="hero-lead">5 đội, 44 vận động viên và 6 sân thi đấu song song. Cả Khối SI cùng đến cổ vũ cho đồng đội.</p>
+          <p className="hero-lead">5 đội, 43 vận động viên và 6 sân thi đấu song song. Cả Khối SI cùng đến cổ vũ cho đồng đội.</p>
           <div className="hero-actions">
             <a className="btn btn-accent" href="#lich">Tra cứu trận của bạn <ArrowUpRight size={18} aria-hidden="true" /></a>
             <a className="btn btn-ghost" href="#doi-thi">Danh sách VĐV</a>
@@ -511,7 +511,7 @@ function Hero() {
       <div className="facts-band">
         <dl className="container facts">
           <div><span className="fact-icon"><CalendarDays size={20} aria-hidden="true" /></span><div><dt>Thời gian</dt><dd>{EVENT.dateLabel}<small>{EVENT.timeLabel}</small></dd></div></div>
-          <div><span className="fact-icon"><Users size={20} aria-hidden="true" /></span><div><dt>Thể thức</dt><dd>5 đội · 44 VĐV<small>40 trận vòng tròn · 7 khung giờ</small></dd></div></div>
+          <div><span className="fact-icon"><Users size={20} aria-hidden="true" /></span><div><dt>Thể thức</dt><dd>5 đội · 43 VĐV<small>40 trận vòng tròn · 7 khung giờ</small></dd></div></div>
           <div><span className="fact-icon"><MapPin size={20} aria-hidden="true" /></span><div><dt>Địa điểm</dt><dd><a href={MAPS_URL} target="_blank" rel="noopener noreferrer">{EVENT.venue}</a><small>{EVENT.address}</small></dd></div></div>
           <div><span className="fact-icon"><Trophy size={20} aria-hidden="true" /></span><div><dt>Tổng giải thưởng</dt><dd>{EVENT.prizeTotal}</dd></div></div>
         </dl>
@@ -526,12 +526,12 @@ function Players({ players }) {
     <section className="section" id="doi-thi">
       <div className="container">
         <SectionHead title="Vận động viên và đội thi đấu"
-          lead="44 vận động viên chia theo 4 trình A–D. Đội 1–4 mỗi đội 8 người, Đội 5 là đội khách mời 12 người. Chữ cái bên cạnh tên là trình."
+          lead="43 vận động viên chia theo 4 trình A–D. Đội 1–4 mỗi đội 8 người, Đội 5 là đội khách mời 11 người. Chữ cái bên cạnh tên là trình."
           aside={(
             <div className="progress">
-              <p><b>{players.length}</b><span>/44 VĐV trong danh sách</span></p>
-              <div className="progress-track" role="progressbar" aria-valuemin={0} aria-valuemax={44} aria-valuenow={players.length}>
-                <i style={{ width: Math.min(100, Math.round((players.length / 44) * 100)) + '%' }} />
+              <p><b>{players.length}</b><span>/43 VĐV trong danh sách</span></p>
+              <div className="progress-track" role="progressbar" aria-valuemin={0} aria-valuemax={43} aria-valuenow={players.length}>
+                <i style={{ width: Math.min(100, Math.round((players.length / 43) * 100)) + '%' }} />
               </div>
               <small>{LEVELS.map(l => `${l} ${count(l)}`).join(' · ')}</small>
             </div>
@@ -563,7 +563,7 @@ function Players({ players }) {
         <div className="teams-strip">
           <div>
             <h3 className="subhead">Chia đội</h3>
-            <p className="subnote">Đội 1–4 là đội nội bộ, mỗi đội 8 người. Đội 5 là đội khách mời 12 người.</p>
+            <p className="subnote">Đội 1–4 là đội nội bộ, mỗi đội 8 người. Đội 5 là đội khách mời 11 người.</p>
           </div>
           <div className="team-cards">
             {TEAMS.map(t => {
