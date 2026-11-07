@@ -580,3 +580,9 @@ a { color: inherit; }
 .score-table .rank { width: 48px; font-size: 20px; }
 .score-table .num b { font-family: var(--font-display); font-size: 20px; white-space: nowrap; }
 @media (max-width: 520px) { .score-grid { grid-template-columns: 1fr; } }
+
+/* Bảng tỉ số: xếp dọc, mỗi bảng đủ rộng, không kéo ngang */
+.score-grid { grid-template-columns: 1fr; gap: 24px; }
+.score-card { overflow-x: visible; }
+.score-table { min-width: 0; table-layout: auto; }
+.score-table .t-sub { white-space: normal; }
