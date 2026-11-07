@@ -284,6 +284,9 @@ const RESULTS = [
   [1, 3, 'AB', 2, '11-0', 'Việt - Nghị', 'Toàn - Vũ', 8],
   [1, 3, 'CD', 1, '11-3', 'Cường - Lan', 'Thúy - Phượng', 8],
   [1, 3, 'CD', 2, '3-11', 'Cường - Văn Anh', 'Toàn Nguyễn - Loan', 8],
+  // Bổ sung: vòng 7 hạng AB-2 (đội 4 – đội 5), vòng 8 hạng AB-1 (đội 1 – đội 3)
+  [4, 5, 'AB', 2, '0-11', 'Quang - Kiến', 'Hiếu - Kỳ', 7],
+  [1, 3, 'AB', 1, '11-7', 'Tuấn - Phúc', 'Toàn - Tiến', 8],
 ];
 const resultOf = (t1, t2, tier, seq) => {
   const r = RESULTS.find(([a, b, h, s]) => a === t1 && b === t2 && h === tier && s === seq);
