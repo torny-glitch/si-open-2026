@@ -249,10 +249,41 @@ const SCHEDULE = [
   ['10:30', 16, 'CD', 1, 3, 5],
   ['10:30', 17, 'CD', 2, 3, 5]
 ];
+// Kết quả vòng tròn đã nhập (đội 1 – điểm, đội 2 – điểm). Thêm dòng để nhập tiếp.
+const RESULTS = [
+  [1, 2, 'AB', 1, '10-11'],   // Nghị–Phúc 10 : 11 Hiếu–Sơn
+  [1, 2, 'AB', 2, '4-11'],    // Tuấn–Việt 4 : 11 Hải–Tú
+  [1, 2, 'CD', 1, '4-11'],    // Cường–Lan 4 : 11 Tới–Việt
+  [1, 2, 'CD', 2, '6-11'],    // Cường–Vân Anh 6 : 11 Thiên–Trung Anh
+  [3, 4, 'AB', 1, '6-11'],    // Toàn–Tiến 6 : 11 Tú–Quang
+  [3, 4, 'AB', 2, '3-11'],    // Tuấn–Vũ 3 : 11 Long–Kiên
+  [3, 4, 'CD', 1, '8-11'],    // Thúy–Phượng 8 : 11 Hà–Đạt
+  [3, 4, 'CD', 2, '11-5'],    // Toàn Nguyễn–Loan 11 : 5 Tùng–Dung
+  // Vòng 3: đội 2 – đội 5
+  [2, 5, 'AB', 1, '0-11'],    // Hiếu–Sơn 0 : 11 Thắng–Long
+  [2, 5, 'AB', 2, '11-7'],    // Hải–Tú 11 : 7 Kỳ–Hiếu
+  [2, 5, 'CD', 1, '11-8'],    // Tới–Việt 11 : 8 Hoàng Thái–Ngọc Thắng
+  [2, 5, 'CD', 2, '11-3'],    // Thiên–Trung Anh 11 : 3 Văn Phương–Anh Bùi
+  // Vòng 4: đội 1 – đội 4
+  [1, 4, 'AB', 1, '11-4'],    // Tuấn–Phúc 11 : 4 Tú–Quang
+  [1, 4, 'AB', 2, '11-0'],    // Nghị–Việt 11 : 0 Long–Kiên
+  [1, 4, 'CD', 1, '9-11'],    // Cường–Văn Anh 9 : 11 Hà–Đạt
+  [1, 4, 'CD', 2, '11-3'],    // Cường–Lan 11 : 3 Tùng–Dung
+  // Vòng 5: đội 3 – đội 5
+  [3, 5, 'AB', 1, '5-11'],    // Toàn–Tiến 5 : 11 Long–Thắng
+  [3, 5, 'AB', 2, '0-11'],    // Tuấn–Vũ 0 : 11 Minh–Văn Thắng
+  [3, 5, 'CD', 1, '9-11'],    // Thúy–Phượng 9 : 11 Thái–Ngọc Thắng
+  [3, 5, 'CD', 2, '11-3'],    // Toàn Nguyễn–Loan 11 : 3 Nhàn–Thế Anh
+];
+const resultOf = (t1, t2, tier, seq) => {
+  const r = RESULTS.find(([a, b, h, s]) => a === t1 && b === t2 && h === tier && s === seq);
+  return r ? r[4] : '';
+};
 const PLAYOFF_SLOTS = [['11:00', PH_THIRD], ['11:30', PH_FINAL]];
 const DEFAULT_MATCHES = [
   ...SCHEDULE.map(([time, court, tier, seq, t1, t2], i) => ({
-    id: 'M' + pad(i + 1), time, court, phase: PH_RR, tier, seq, t1, t2, score: '', status: 'Dự kiến'
+    id: 'M' + pad(i + 1), time, court, phase: PH_RR, tier, seq, t1, t2,
+    score: resultOf(t1, t2, tier, seq), status: resultOf(t1, t2, tier, seq) ? 'Đã có tỉ số' : 'Dự kiến'
   })),
   ...PLAYOFF_SLOTS.flatMap(([time, phase]) => ['AB', 'CD'].flatMap(tier => [1, 2].map(seq => ({
     id: (phase === PH_FINAL ? 'CK' : 'TB') + '-' + tier + seq, time,
