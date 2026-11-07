@@ -76,8 +76,8 @@ const PRIZES = [
   { rank: 'Giải Ba', amount: '2.000.000đ', reward: 'Huy chương đồng', cls: 'third' }
 ];
 const SIDE_PRIZES = [
-  { title: 'Giải Fair Play', amount: '1.000.000đ', note: 'Vinh danh tinh thần thi đấu đẹp', Icon: HeartHandshake },
-  { title: 'Giải Phong cách', amount: '', note: 'Giá trị giải sẽ được công bố', Icon: Shirt }
+  { title: 'Giải Fair Play', amount: '1.000.000đ', note: 'Đội 1', Icon: HeartHandshake },
+  { title: 'Giải Phong cách', amount: '', note: 'Đội 3', Icon: Shirt }
 ];
 
 const RULES = [
@@ -298,6 +298,17 @@ const RESULTS = [
   [2, 3, 'CD', 1, '11-5', 'Trần Trung Anh & Nguyễn Đăng Thiên', 'Hà Thị Phương Thúy & Hoàng Bích Phượng', 10],
   [2, 3, 'CD', 2, '11-5', 'Nguyễn Lê Tới & Ngô Hoàng Việt', 'Nguyễn Ngọc Toàn & Nguyễn Thị Loan', 10],
 ];
+// Kết quả tranh giải Ba và chung kết: [giai đoạn, hạng, số trận, tỉ số, tên VĐV đội trên, tên VĐV đội dưới]
+const PLAYOFF_RESULTS = [
+  ['Tranh giải 3', 'AB', 1, '11-4', 'Nguyễn Mạnh Tuấn & Phạm Hồng Phúc', 'Nguyễn Hai Long & Trần Anh Kiên'],
+  ['Tranh giải 3', 'AB', 2, '3-11', 'Nguyễn Hữu Nghị & Nghiêm An Việt', 'Lê Trọng Tú & Chu Mạnh Quang'],
+  ['Tranh giải 3', 'CD', 1, '0-11', 'Lê Cường & Vũ Thị Vân Anh', 'Nguyễn Thanh Hà & Nguyễn Thanh Tùng'],
+  ['Tranh giải 3', 'CD', 2, '5-11', 'Lê Cường & Nguyễn Hương Lan', 'Nguyễn Văn Đạt & Dương Thùy Dung'],
+  ['Chung kết', 'AB', 1, '3-15', 'Trần Trung Hiếu & Đinh Anh Tú', 'Nguyễn Đức Thắng & Vũ Ngọc Kỳ'],
+  ['Chung kết', 'AB', 2, '15-3', 'Nguyễn Vũ Hải & Nguyễn Thanh Sơn', 'Dương Hoàng Long & Trần Khắc Hiếu'],
+  ['Chung kết', 'CD', 1, '15-8', 'Trần Trung Anh & Nguyễn Đăng Thiên', 'Hoàng Ngọc Thắng & Nguyễn Hoàng Thái'],
+  ['Chung kết', 'CD', 2, '15-3', 'Nguyễn Lê Tới & Ngô Hoàng Việt', 'Bùi Thế Anh & Nguyễn Thị Nhàn'],
+];
 const resultOf = (t1, t2, tier, seq) => {
   const r = RESULTS.find(([a, b, h, s]) => a === t1 && b === t2 && h === tier && s === seq);
   return r ? r[4] : '';
@@ -415,7 +426,11 @@ function buildView(matches) {
   const view = matches.map(m => {
     if (!seats[m.phase]) return m;
     const [i, j] = seats[m.phase];
-    return { ...m, t1: m.t1 ?? rank(i), t2: m.t2 ?? rank(j), seat1: i + 1, seat2: j + 1 };
+    const po = PLAYOFF_RESULTS.find(([ph, tr, sq]) => ph === (m.phase === PH_FINAL ? 'Chung kết' : 'Tranh giải 3') && tr === m.tier && sq === m.seq);
+    return {
+      ...m, t1: m.t1 ?? rank(i), t2: m.t2 ?? rank(j), seat1: i + 1, seat2: j + 1,
+      score: m.score || (po ? po[3] : ''), names1: po ? po[4] : '', names2: po ? po[5] : ''
+    };
   });
   return { view, rows, encRes, complete };
 }
@@ -699,44 +714,69 @@ function Timeline() {
 
 const resultInfo = (t1, t2, tier, seq) => RESULTS.find(([a, b, h, s]) => a === t1 && b === t2 && h === tier && s === seq);
 const vongOf = m => { const r = resultInfo(m.t1, m.t2, m.tier, m.seq); return r ? r[7] : 99; };
+const teamLabel = (team, seat) => (team ? teamName(team) : `Hạng ${seat ?? ''}`);
+
+function ScoreTable({ title, firstCol, rows }) {
+  return (
+    <article className="score-card">
+      <h3>{title}</h3>
+      <table className="table score-table">
+        <caption className="sr-only">{title}</caption>
+        <thead>
+          <tr><th scope="col">{firstCol}</th><th scope="col">Đội 1</th><th scope="col" className="num">Tỉ số</th><th scope="col">Đội 2</th></tr>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={i}>
+              <td className="rank">{r.first}</td>
+              <td><span className="t-name">{r.t1}</span><span className="t-sub">{r.n1}</span></td>
+              <td className="num"><b>{r.score}</b></td>
+              <td><span className="t-name">{r.t2}</span><span className="t-sub">{r.n2}</span></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </article>
+  );
+}
 
 function ScoreTables({ view }) {
   const rr = view.filter(m => m.phase === PH_RR);
+  const scoreOf = m => { const sc = parseScore(m.score); return sc ? `${sc[0]} – ${sc[1]}` : '–'; };
+  const hang = [['AB', 1], ['AB', 2], ['CD', 1], ['CD', 2]];
+  const playoff = (phase, title) => {
+    const list = view.filter(m => m.phase === phase)
+      .sort((a, b) => a.tier.localeCompare(b.tier) || a.seq - b.seq);
+    return (
+      <ScoreTable title={title} firstCol="Hạng" rows={list.map(m => ({
+        first: `${m.tier}-${m.seq}`,
+        t1: teamLabel(m.t1, m.seat1), n1: m.names1 || '', score: scoreOf(m),
+        t2: teamLabel(m.t2, m.seat2), n2: m.names2 || ''
+      }))} />
+    );
+  };
   return (
     <section className="section" id="lich">
       <div className="container">
-        <SectionHead title="Bảng tỉ số vòng tròn"
-          lead="Mỗi cặp đội có 4 hạng: AB-1, AB-2, CD-1, CD-2. Mỗi hạng một bảng, ghi rõ vòng, đội, tên VĐV và tỉ số." />
+        <SectionHead title="Bảng tỉ số"
+          lead="Mỗi cặp đội có 4 hạng: AB-1, AB-2, CD-1, CD-2. Vòng vòng tròn, tranh giải Ba và chung kết đều ghi đội, tên VĐV và tỉ số." />
         <div className="score-grid">
-          {[['AB', 1], ['AB', 2], ['CD', 1], ['CD', 2]].map(([tier, seq]) => {
+          {hang.map(([tier, seq]) => {
             const list = rr.filter(m => m.tier === tier && m.seq === seq)
               .sort((a, b) => (vongOf(a) - vongOf(b)) || a.t1 - b.t1 || a.t2 - b.t2);
             return (
-              <article className="score-card" key={tier + seq}>
-                <h3>Hạng {tier}-{seq}</h3>
-                <table className="table score-table">
-                  <caption className="sr-only">Tỉ số hạng {tier}-{seq}</caption>
-                  <thead>
-                    <tr><th scope="col">Vòng</th><th scope="col">Đội 1</th><th scope="col" className="num">Tỉ số</th><th scope="col">Đội 2</th></tr>
-                  </thead>
-                  <tbody>
-                    {list.map(m => {
-                      const info = resultInfo(m.t1, m.t2, tier, seq);
-                      const sc = parseScore(m.score);
-                      return (
-                        <tr key={m.id}>
-                          <td className="rank">{info ? info[7] : '–'}</td>
-                          <td><span className="t-name">{teamName(m.t1)}</span><span className="t-sub">{info ? info[5] : ''}</span></td>
-                          <td className="num"><b>{sc ? `${sc[0]} – ${sc[1]}` : '–'}</b></td>
-                          <td><span className="t-name">{teamName(m.t2)}</span><span className="t-sub">{info ? info[6] : ''}</span></td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </article>
+              <ScoreTable key={tier + seq} title={`Hạng ${tier}-${seq}`} firstCol="Vòng" rows={list.map(m => {
+                const info = resultInfo(m.t1, m.t2, tier, seq);
+                return {
+                  first: info ? info[7] : '–',
+                  t1: teamName(m.t1), n1: info ? info[5] : '', score: scoreOf(m),
+                  t2: teamName(m.t2), n2: info ? info[6] : ''
+                };
+              })} />
             );
           })}
+          {playoff(PH_THIRD, 'Tranh giải Ba')}
+          {playoff(PH_FINAL, 'Chung kết')}
         </div>
       </div>
     </section>
