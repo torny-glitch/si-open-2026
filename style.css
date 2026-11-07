@@ -559,3 +559,24 @@ a { color: inherit; }
 .rule-sub > li::before { content: '–'; position: absolute; left: 0; color: var(--blue-ink); }
 .rules details { padding-bottom: 0; }
 .rule-body { padding-bottom: 22px; }
+
+/* ---------- Vận động viên: các cột và thẻ đều chiều cao ---------- */
+.levels { align-items: stretch; }
+.level { display: flex; flex-direction: column; }
+.level-list { flex: 1; align-content: start; }
+.level-list li { height: 56px; }
+.pname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp: unset; display: block; }
+.pdept { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.team-cards { align-items: stretch; }
+.tcard { min-height: 100%; }
+.tlist li { min-height: 34px; }
+
+/* ---------- Bảng tỉ số theo hạng ---------- */
+.score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 20px; }
+.score-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; overflow-x: auto; }
+.score-card h3 { font-family: var(--font-display); font-weight: 700; font-size: 26px; margin-bottom: 10px; }
+.score-table { min-width: 0; }
+.score-table td { vertical-align: top; }
+.score-table .rank { width: 48px; font-size: 20px; }
+.score-table .num b { font-family: var(--font-display); font-size: 20px; white-space: nowrap; }
+@media (max-width: 520px) { .score-grid { grid-template-columns: 1fr; } }

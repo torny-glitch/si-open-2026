@@ -62,12 +62,12 @@ const NAV = [
 ];
 
 const TIMELINE = [
-  ['06:30', 'Chuẩn bị', 'Chuẩn bị hậu cần', 'Ban Tổ chức chuẩn bị sân bãi và dụng cụ.'],
-  ['07:00', 'Khai mạc', 'Check-in, khai mạc và phổ biến thể lệ', 'Ổn định đội hình, phổ biến quy định thi đấu.'],
-  ['07:30', 'Vòng tròn', 'Thi đấu vòng tròn', '40 trận trong 7 khung giờ, 6 sân thi đấu song song.'],
-  ['11:00', 'Tranh 3–4', 'Tranh giải Ba', 'Hạng 3–4 đấu tranh giải Ba, 4 hạng trên sân 16–19.'],
-  ['11:30', 'Chung kết', 'Chung kết', 'Hạng 1–2 đấu chung kết, 4 hạng trên sân 16–19.'],
-  ['12:00', 'Trao giải', 'Trao giải và lucky draw', 'Kết thúc chương trình.']
+  ['01', 'Chuẩn bị', 'Chuẩn bị hậu cần', 'Ban Tổ chức chuẩn bị sân bãi và dụng cụ.'],
+  ['02', 'Khai mạc', 'Check-in, khai mạc và phổ biến thể lệ', 'Ổn định đội hình, phổ biến quy định thi đấu.'],
+  ['03', 'Vòng tròn', 'Thi đấu vòng tròn', '40 trận, 4 hạng mỗi cặp đội.'],
+  ['04', 'Tranh 3–4', 'Tranh giải Ba', 'Hạng 3–4 đấu tranh giải Ba.'],
+  ['05', 'Chung kết', 'Chung kết', 'Hạng 1–2 đấu chung kết.'],
+  ['06', 'Trao giải', 'Trao giải và lucky draw', 'Kết thúc chương trình.']
 ];
 
 const PRIZES = [
@@ -249,31 +249,41 @@ const SCHEDULE = [
   ['10:30', 16, 'CD', 1, 3, 5],
   ['10:30', 17, 'CD', 2, 3, 5]
 ];
-// Kết quả vòng tròn đã nhập (đội 1 – điểm, đội 2 – điểm). Thêm dòng để nhập tiếp.
+// Kết quả vòng tròn: [đội 1, đội 2, hạng, số trận, tỉ số (đội 1 – đội 2), tên VĐV đội 1, tên VĐV đội 2, vòng]
 const RESULTS = [
-  [1, 2, 'AB', 1, '10-11'],   // Nghị–Phúc 10 : 11 Hiếu–Sơn
-  [1, 2, 'AB', 2, '4-11'],    // Tuấn–Việt 4 : 11 Hải–Tú
-  [1, 2, 'CD', 1, '4-11'],    // Cường–Lan 4 : 11 Tới–Việt
-  [1, 2, 'CD', 2, '6-11'],    // Cường–Vân Anh 6 : 11 Thiên–Trung Anh
-  [3, 4, 'AB', 1, '6-11'],    // Toàn–Tiến 6 : 11 Tú–Quang
-  [3, 4, 'AB', 2, '3-11'],    // Tuấn–Vũ 3 : 11 Long–Kiên
-  [3, 4, 'CD', 1, '8-11'],    // Thúy–Phượng 8 : 11 Hà–Đạt
-  [3, 4, 'CD', 2, '11-5'],    // Toàn Nguyễn–Loan 11 : 5 Tùng–Dung
-  // Vòng 3: đội 2 – đội 5
-  [2, 5, 'AB', 1, '0-11'],    // Hiếu–Sơn 0 : 11 Thắng–Long
-  [2, 5, 'AB', 2, '11-7'],    // Hải–Tú 11 : 7 Kỳ–Hiếu
-  [2, 5, 'CD', 1, '11-8'],    // Tới–Việt 11 : 8 Hoàng Thái–Ngọc Thắng
-  [2, 5, 'CD', 2, '11-3'],    // Thiên–Trung Anh 11 : 3 Văn Phương–Anh Bùi
-  // Vòng 4: đội 1 – đội 4
-  [1, 4, 'AB', 1, '11-4'],    // Tuấn–Phúc 11 : 4 Tú–Quang
-  [1, 4, 'AB', 2, '11-0'],    // Nghị–Việt 11 : 0 Long–Kiên
-  [1, 4, 'CD', 1, '9-11'],    // Cường–Văn Anh 9 : 11 Hà–Đạt
-  [1, 4, 'CD', 2, '11-3'],    // Cường–Lan 11 : 3 Tùng–Dung
-  // Vòng 5: đội 3 – đội 5
-  [3, 5, 'AB', 1, '5-11'],    // Toàn–Tiến 5 : 11 Long–Thắng
-  [3, 5, 'AB', 2, '0-11'],    // Tuấn–Vũ 0 : 11 Minh–Văn Thắng
-  [3, 5, 'CD', 1, '9-11'],    // Thúy–Phượng 9 : 11 Thái–Ngọc Thắng
-  [3, 5, 'CD', 2, '11-3'],    // Toàn Nguyễn–Loan 11 : 3 Nhàn–Thế Anh
+  [1, 2, 'AB', 1, '10-11', 'Nghị - Phúc', 'Hiếu - Sơn', 1],
+  [1, 2, 'AB', 2, '4-11', 'Tuấn - Việt', 'Hải - Tú', 1],
+  [1, 2, 'CD', 1, '4-11', 'Cường - Lan', 'Tới - Việt', 1],
+  [1, 2, 'CD', 2, '6-11', 'Cường - Vân Anh', 'Thiên - Trung Anh', 1],
+  [3, 4, 'AB', 1, '6-11', 'Toàn - Tiến', 'Tú - Quang', 1],
+  [3, 4, 'AB', 2, '3-11', 'Tuấn - Vũ', 'Long - Kiên', 1],
+  [3, 4, 'CD', 1, '8-11', 'Thúy - Phượng', 'Hà - Đạt', 1],
+  [3, 4, 'CD', 2, '11-5', 'Toàn Nguyễn - Loan', 'Tùng - Dung', 1],
+  [2, 5, 'AB', 1, '0-11', 'Hiếu - Sơn', 'Thắng - Long', 3],
+  [2, 5, 'AB', 2, '11-7', 'Hải - Tú', 'Kỳ - Hiếu', 3],
+  [2, 5, 'CD', 1, '11-8', 'Tới - Việt', 'Hoàng Thái - Ngọc Thắng', 3],
+  [2, 5, 'CD', 2, '11-3', 'Thiên - Trung Anh', 'Văn Phương - Anh Bùi', 3],
+  [1, 4, 'AB', 1, '11-4', 'Tuấn - Phúc', 'Tú - Quang', 4],
+  [1, 4, 'AB', 2, '11-0', 'Nghị - Việt', 'Long - Kiên', 4],
+  [1, 4, 'CD', 1, '9-11', 'Cường - Văn Anh', 'Hà - Đạt', 4],
+  [1, 4, 'CD', 2, '11-3', 'Cường - Lan', 'Tùng - Dung', 4],
+  [3, 5, 'AB', 1, '5-11', 'Toàn - Tiến', 'Long - Thắng', 5],
+  [3, 5, 'AB', 2, '0-11', 'Tuấn - Vũ', 'Minh - Văn Thắng', 5],
+  [3, 5, 'CD', 1, '9-11', 'Thúy - Phượng', 'Thái - Ngọc Thắng', 5],
+  [3, 5, 'CD', 2, '11-3', 'Toàn Nguyễn - Loan', 'Nhàn - Thế Anh', 5],
+  // Vòng 6: đội 2 – đội 4
+  [2, 4, 'AB', 1, '11-5', 'Hiếu - Tú', 'Tú - Quang', 6],
+  [2, 4, 'AB', 2, '11-4', 'Hải - Sơn', 'Long - Kiên', 6],
+  [2, 4, 'CD', 1, '1-11', 'Tới - Việt', 'Hà - Tùng', 6],
+  [2, 4, 'CD', 2, '11-1', 'Thiên - Trung Anh', 'Đạt - Dung', 6],
+  // Vòng 7: đội 4 – đội 5 (hạng AB-2 chưa có tỉ số)
+  [4, 5, 'AB', 1, '3-11', 'Tú - Long', 'Long - Thắng', 7],
+  [4, 5, 'CD', 1, '11-7', 'Tùng - Hà', 'Thái - Ngọc Thắng', 7],
+  [4, 5, 'CD', 2, '11-0', 'Đạt - Hà', 'Thế Anh - Minh Phương', 7],
+  // Vòng 8: đội 1 – đội 3 (hạng AB-1 chưa có tỉ số)
+  [1, 3, 'AB', 2, '11-0', 'Việt - Nghị', 'Toàn - Vũ', 8],
+  [1, 3, 'CD', 1, '11-3', 'Cường - Lan', 'Thúy - Phượng', 8],
+  [1, 3, 'CD', 2, '3-11', 'Cường - Văn Anh', 'Toàn Nguyễn - Loan', 8],
 ];
 const resultOf = (t1, t2, tier, seq) => {
   const r = RESULTS.find(([a, b, h, s]) => a === t1 && b === t2 && h === tier && s === seq);
@@ -292,7 +302,7 @@ const DEFAULT_MATCHES = [
   }))))
 ];
 
-const MATCH_COLS = ['Mã trận', 'Giờ', 'Sân', 'Vòng', 'Hạng', 'Đội 1', 'Đội 2', 'Tỉ số', 'Trạng thái'];
+const MATCH_COLS = ['Mã trận', 'Vòng', 'Hạng', 'Đội 1', 'Đội 2', 'Tỉ số', 'Trạng thái'];
 const PLAYER_COLS = ['Trình', 'Họ tên', 'Phòng ban', 'Đội', 'Vai trò'];
 
 /* ------------------------------------------------------------------ *
@@ -541,8 +551,8 @@ function Hero() {
       </div>
       <div className="facts-band">
         <dl className="container facts">
-          <div><span className="fact-icon"><CalendarDays size={20} aria-hidden="true" /></span><div><dt>Thời gian</dt><dd>{EVENT.dateLabel}<small>{EVENT.timeLabel}</small></dd></div></div>
-          <div><span className="fact-icon"><Users size={20} aria-hidden="true" /></span><div><dt>Thể thức</dt><dd>5 đội · 43 VĐV<small>40 trận vòng tròn · 7 khung giờ</small></dd></div></div>
+          <div><span className="fact-icon"><CalendarDays size={20} aria-hidden="true" /></span><div><dt>Ngày thi đấu</dt><dd>{EVENT.dateLabel}<small>{EVENT.venue}</small></dd></div></div>
+          <div><span className="fact-icon"><Users size={20} aria-hidden="true" /></span><div><dt>Thể thức</dt><dd>5 đội · 43 VĐV<small>40 trận vòng tròn</small></dd></div></div>
           <div><span className="fact-icon"><MapPin size={20} aria-hidden="true" /></span><div><dt>Địa điểm</dt><dd><a href={MAPS_URL} target="_blank" rel="noopener noreferrer">{EVENT.venue}</a><small>{EVENT.address}</small></dd></div></div>
           <div><span className="fact-icon"><Trophy size={20} aria-hidden="true" /></span><div><dt>Tổng giải thưởng</dt><dd>{EVENT.prizeTotal}</dd></div></div>
         </dl>
@@ -655,7 +665,7 @@ function Timeline() {
   return (
     <section className="section section--paper" id="lich-trinh">
       <div className="container">
-        <SectionHead title="Chương trình" lead="Khung giờ dự kiến từ 06:30 đến 12:00. Ban Tổ chức có thể điều chỉnh nhẹ trước ngày thi đấu." />
+        <SectionHead title="Chương trình" lead="Các bước chính của giải. Ban Tổ chức sẽ thông báo chi tiết trước ngày thi đấu." />
         <ol className="timeline">
           {TIMELINE.map(([time, tag, title, text]) => (
             <li className="tl-item" key={time + tag}>
@@ -674,115 +684,47 @@ function Timeline() {
   );
 }
 
-function MatchCard({ m }) {
-  const sc = parseScore(m.score);
-  const sides = [
-    { team: m.t1, seat: m.seat1, mine: sc?.[0], theirs: sc?.[1] },
-    { team: m.t2, seat: m.seat2, mine: sc?.[1], theirs: sc?.[0] }
-  ];
-  return (
-    <li className="mcard">
-      <div className="mcard-top">
-        <strong className="mcode">{m.id}</strong>
-        <span className="mcourt">{m.court ? `Sân ${m.court}` : 'Chưa xếp sân'}</span>
-      </div>
-      <p className="mpair">{m.phase === PH_RR ? `Hạng ${hangLabel(m)}` : `${m.phase} · hạng ${hangLabel(m)}`}</p>
-      <div className="mcard-teams">
-        {sides.map((s, i) => (
-          <div key={i} className={'mteam' + (s.mine != null && s.mine > s.theirs ? ' is-win' : '')}>
-            <div className="mteam-head">
-              <span>{s.team ? teamName(s.team) : `Hạng ${s.seat ?? ''}`}{s.team && isGuest(s.team) ? ' · khách mời' : ''}</span>
-              <b>{s.mine ?? ''}</b>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="mcard-foot">
-        <span className="mnote">{m.time}</span>
-        <span className={statusClass(sc ? 'đã có' : m.status)}>{sc ? 'Đã có tỉ số' : (m.status || 'Dự kiến')}</span>
-      </div>
-    </li>
-  );
-}
+const resultInfo = (t1, t2, tier, seq) => RESULTS.find(([a, b, h, s]) => a === t1 && b === t2 && h === tier && s === seq);
+const vongOf = m => { const r = resultInfo(m.t1, m.t2, m.tier, m.seq); return r ? r[7] : 99; };
 
-function MatchCenter({ view, onOpenAdmin }) {
-  const [query, setQuery] = useState('');
-  const [team, setTeam] = useState('');
-  const [tier, setTier] = useState('');
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return view.filter(m => {
-      if (team && m.t1 !== Number(team) && m.t2 !== Number(team)) return false;
-      if (tier && m.tier !== tier) return false;
-      if (!q) return true;
-      const hay = [m.id, m.time, m.phase, m.court ? 'sân ' + m.court : '',
-        hangLabel(m),
-        m.t1 ? teamName(m.t1) : '', m.t2 ? teamName(m.t2) : ''].join(' ').toLowerCase();
-      return hay.includes(q);
-    });
-  }, [view, query, team, tier]);
-
-  const slots = useMemo(() => {
-    const g = new Map();
-    [...filtered]
-      .sort((a, b) => a.time.localeCompare(b.time) || (Number(a.court) || 9) - (Number(b.court) || 9))
-      .forEach(m => { if (!g.has(m.time)) g.set(m.time, []); g.get(m.time).push(m); });
-    return [...g];
-  }, [filtered]);
-
-  const hasFilter = query || team || tier;
-  const reset = () => { setQuery(''); setTeam(''); setTier(''); };
-
+function ScoreTables({ view }) {
+  const rr = view.filter(m => m.phase === PH_RR);
   return (
     <section className="section" id="lich">
       <div className="container">
-        <SectionHead title="Lịch thi đấu"
-          lead="Mỗi cặp đội có 4 hạng: AB-1, AB-2 (Nâng cao) và CD-1, CD-2 (Phong trào). Tìm theo đội, hạng, mã trận hoặc sân."
-          aside={<p className="count"><b>{pad(view.length)}</b> trận<br />40 vòng tròn + 8 tranh hạng</p>} />
-
-        <div className="toolbar">
-          <label className="search">
-            <Search size={20} aria-hidden="true" />
-            <span className="sr-only">Tìm trận đấu</span>
-            <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Đội, hạng AB/CD, mã trận hoặc sân…" />
-          </label>
-          <div className="filters">
-            <select aria-label="Lọc theo đội" value={team} onChange={e => setTeam(e.target.value)}>
-              <option value="">Tất cả đội</option>
-              {TEAMS.map(t => <option key={t} value={t}>{teamName(t)}{isGuest(t) ? ' (khách mời)' : ''}</option>)}
-            </select>
-            <select aria-label="Lọc theo hạng" value={tier} onChange={e => setTier(e.target.value)}>
-              <option value="">Tất cả hạng</option>
-              <option value="AB">Hạng Nâng cao (AB)</option>
-              <option value="CD">Hạng Phong trào (CD)</option>
-            </select>
-            {hasFilter && <button type="button" className="link-btn" onClick={reset}><RotateCcw size={14} aria-hidden="true" /> Xoá bộ lọc</button>}
-          </div>
+        <SectionHead title="Bảng tỉ số vòng tròn"
+          lead="Mỗi cặp đội có 4 hạng: AB-1, AB-2, CD-1, CD-2. Mỗi hạng một bảng, ghi rõ vòng, đội, tên VĐV và tỉ số." />
+        <div className="score-grid">
+          {[['AB', 1], ['AB', 2], ['CD', 1], ['CD', 2]].map(([tier, seq]) => {
+            const list = rr.filter(m => m.tier === tier && m.seq === seq)
+              .sort((a, b) => (vongOf(a) - vongOf(b)) || a.t1 - b.t1 || a.t2 - b.t2);
+            return (
+              <article className="score-card" key={tier + seq}>
+                <h3>Hạng {tier}-{seq}</h3>
+                <table className="table score-table">
+                  <caption className="sr-only">Tỉ số hạng {tier}-{seq}</caption>
+                  <thead>
+                    <tr><th scope="col">Vòng</th><th scope="col">Đội 1</th><th scope="col" className="num">Tỉ số</th><th scope="col">Đội 2</th></tr>
+                  </thead>
+                  <tbody>
+                    {list.map(m => {
+                      const info = resultInfo(m.t1, m.t2, tier, seq);
+                      const sc = parseScore(m.score);
+                      return (
+                        <tr key={m.id}>
+                          <td className="rank">{info ? info[7] : '–'}</td>
+                          <td><span className="t-name">{teamName(m.t1)}</span><span className="t-sub">{info ? info[5] : ''}</span></td>
+                          <td className="num"><b>{sc ? `${sc[0]} – ${sc[1]}` : '–'}</b></td>
+                          <td><span className="t-name">{teamName(m.t2)}</span><span className="t-sub">{info ? info[6] : ''}</span></td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </article>
+            );
+          })}
         </div>
-
-        {slots.length > 0 ? (
-          <div className="slots" aria-live="polite">
-            {slots.map(([time, list]) => (
-              <div className="slot" key={time}>
-                <h3 className="slot-head">
-                  <span className="slot-title">{time}</span>
-                  <span className="slot-time"><Clock3 size={15} aria-hidden="true" />{list.length} trận</span>
-                </h3>
-                <ul className="slot-list">
-                  {list.map(m => <MatchCard key={m.id} m={m} />)}
-                </ul>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="empty">
-            <CalendarDays size={28} aria-hidden="true" />
-            <h3>Không tìm thấy trận phù hợp</h3>
-            <p>Thử đổi từ khoá hoặc xoá bộ lọc để xem lại toàn bộ lịch.</p>
-            <button type="button" className="btn btn-line" onClick={reset}>Xoá bộ lọc</button>
-          </div>
-        )}
       </div>
     </section>
   );
@@ -989,7 +931,7 @@ function Cheer() {
         </div>
         <div className="cheer-tiles">
           <div className="cheer-tile"><Users size={28} aria-hidden="true" /><div><h3>Thi đấu</h3><p>Xem trận của đội và của bạn trong mục lịch thi đấu.</p></div></div>
-          <div className="cheer-tile"><Megaphone size={28} aria-hidden="true" /><div><h3>Cổ vũ</h3><p>Đến {EVENT.venue}, {EVENT.dateLabel}, {EVENT.timeLabel} để tiếp lửa cho đồng đội.</p></div></div>
+          <div className="cheer-tile"><Megaphone size={28} aria-hidden="true" /><div><h3>Cổ vũ</h3><p>Đến {EVENT.venue}, {EVENT.dateLabel} để tiếp lửa cho đồng đội.</p></div></div>
         </div>
       </div>
     </section>
@@ -1001,7 +943,7 @@ function Closing() {
     <section className="closing">
       <div className="container">
         <h2>Hẹn gặp tại sân.</h2>
-        <p>{EVENT.dateLabel} · {EVENT.timeLabel}<br />
+        <p>{EVENT.dateLabel}<br />
           <a href={MAPS_URL} target="_blank" rel="noopener noreferrer">{EVENT.venue}, {EVENT.address}</a></p>
         <div className="closing-actions">
           <a className="btn btn-accent" href="#lich">Tìm trận của bạn <ArrowUpRight size={18} aria-hidden="true" /></a>
@@ -1042,7 +984,7 @@ function Admin({ matches, players, onClose, onApply, onReset }) {
   const download = () => {
     const wb = XLSX.utils.book_new();
     const mRows = matches.map(m => ({
-      'Mã trận': m.id, 'Giờ': m.time, 'Sân': m.court, 'Vòng': m.phase, 'Hạng': hangLabel(m),
+      'Mã trận': m.id, 'Vòng': m.phase, 'Hạng': hangLabel(m),
       'Đội 1': m.t1 ?? '', 'Đội 2': m.t2 ?? '', 'Tỉ số': m.score, 'Trạng thái': m.status
     }));
     const pRows = players.map(p => ({
@@ -1060,7 +1002,7 @@ function Admin({ matches, players, onClose, onApply, onReset }) {
           <h2>Khu vực Ban Tổ chức</h2>
           <button type="button" className="icon-btn" onClick={onClose} aria-label="Đóng khu vực Ban Tổ chức"><X size={20} /></button>
         </div>
-        <p className="admin-lead">Tải file mẫu về (đang có sẵn lịch và danh sách), điền tiếp rồi tải lên. Sheet <b>“Lịch thi đấu”</b>: Giờ, Sân, Tỉ số (dạng <b>11-8</b>, đặt ô là Text), Trạng thái.
+        <p className="admin-lead">Tải file mẫu về (đang có sẵn lịch và danh sách), điền tiếp rồi tải lên. Sheet <b>“Lịch thi đấu”</b>: Tỉ số (dạng <b>11-8</b>, đặt ô là Text), Trạng thái.
           Cột <b>Đội 1</b>, <b>Đội 2</b> là số đội (1–5). Sheet <b>“Vận động viên”</b>: Trình (A–D), Họ tên, Phòng ban, Đội (1–5), Vai trò (ghi <b>Đội trưởng</b> cho đội trưởng).</p>
 
         <label className={'dropzone' + (drag ? ' is-drag' : '')}
@@ -1143,7 +1085,7 @@ function App() {
         <Players players={players} />
         <Register />
         <Timeline />
-        <MatchCenter view={view} onOpenAdmin={openAdmin} />
+        <ScoreTables view={view} />
         <Standings rows={rows} encRes={encRes} view={view} />
         <Bracket view={view} rows={rows} />
         <Rules />
