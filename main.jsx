@@ -71,9 +71,9 @@ const TIMELINE = [
 ];
 
 const PRIZES = [
-  { rank: 'Giải Nhất', amount: '4.000.000đ', reward: 'Cúp vô địch + Huy chương vàng', cls: 'first' },
-  { rank: 'Giải Nhì', amount: '3.000.000đ', reward: 'Huy chương bạc', cls: 'second' },
-  { rank: 'Giải Ba', amount: '2.000.000đ', reward: 'Huy chương đồng', cls: 'third' }
+  { rank: 'Giải Nhất', team: 'Đội 2', amount: '4.000.000đ', reward: 'Cúp vô địch + Huy chương vàng', cls: 'first' },
+  { rank: 'Giải Nhì', team: 'Đội 5', amount: '3.000.000đ', reward: 'Huy chương bạc', cls: 'second' },
+  { rank: 'Giải Ba', team: 'Đội 4', amount: '2.000.000đ', reward: 'Huy chương đồng', cls: 'third' }
 ];
 const SIDE_PRIZES = [
   { title: 'Giải Fair Play', amount: '1.000.000đ', note: 'Đội 1', Icon: HeartHandshake },
@@ -866,7 +866,7 @@ function BracketMatch({ title, a, b, note }) {
       <p className="bk-title">{title}</p>
       {[a, b].map((s, i) => (
         <div key={i} className={'bk-row' + (s.win ? ' is-win' : '') + (s.pending ? ' is-pending' : '')}>
-          <span>{s.name}</span><b>{s.score ?? '–'}</b>
+          <span className="bk-name">{s.name}</span><b className="bk-score">{s.score ?? '–'}</b>
         </div>
       ))}
       {note && <p className="bk-note">{note}</p>}
@@ -874,7 +874,7 @@ function BracketMatch({ title, a, b, note }) {
   );
 }
 
-function Bracket({ view, rows }) {
+function Bracket({ view }) {
   const tally = phase => {
     const ms = view.filter(m => m.phase === phase);
     const first = ms[0] || {};
@@ -886,7 +886,7 @@ function Bracket({ view, rows }) {
       if (s[0] > s[1]) w1++; else if (s[1] > s[0]) w2++;
     });
     const finished = ms.length > 0 && done === ms.length;
-    const nameOf = (t, seat) => (t ? teamName(t) : `Hạng ${seat ?? ''}`);
+    const nameOf = (tm, seat) => (tm ? teamName(tm) : `Hạng ${seat ?? ''}`);
     return {
       a: { name: nameOf(first.t1, first.seat1), score: done ? w1 : undefined, win: finished && w1 > w2, pending: !first.t1 },
       b: { name: nameOf(first.t2, first.seat2), score: done ? w2 : undefined, win: finished && w2 > w1, pending: !first.t2 },
@@ -904,20 +904,22 @@ function Bracket({ view, rows }) {
         <SectionHead title="Con đường tới ngôi vô địch"
           lead="Sau vòng tròn, hạng 3–4 đấu tranh giải Ba; hạng 1–2 đấu chung kết. Mỗi trận gồm 4 hạng, tên đội tự điền theo bảng xếp hạng." />
         <div className="bracket">
-          <BracketMatch title="Chung kết · 4 hạng" a={fin.a} b={fin.b}
-            note={fin.tie ? 'Tỉ số hoà 2–2: BTC quyết định thêm.' : null} />
-          <span className="bk-link" aria-hidden="true" />
+          <div className="bk-final">
+            <BracketMatch title="Chung kết · 4 hạng" a={fin.a} b={fin.b}
+              note={fin.tie ? 'Tỉ số hoà 2–2: BTC quyết định thêm.' : null} />
+          </div>
+          <div className="bk-link" aria-hidden="true"><span /></div>
           <div className="bk-champ">
-            <Trophy size={34} aria-hidden="true" />
-            <strong>{champion ? teamName(champion) : 'Nhà vô địch'}</strong>
-            <span>{champion ? 'SI Open 2026' : 'Chờ trận chung kết'}</span>
+            <span className="bk-kicker">Nhà vô địch</span>
+            <Trophy size={40} aria-hidden="true" />
+            <strong>{champion ? teamName(champion) : 'Chờ chung kết'}</strong>
+            <span className="bk-sub">{champion ? 'SI Open 2026' : 'Kết quả sẽ được cập nhật'}</span>
           </div>
           <div className="bk-third">
             <BracketMatch title="Tranh giải Ba · 4 hạng" a={third.a} b={third.b}
               note={third.tie ? 'Tỉ số hoà 2–2: BTC quyết định thêm.' : null} />
           </div>
         </div>
-        {rows.length === 0 && null}
       </div>
     </section>
   );
@@ -951,6 +953,7 @@ function Awards() {
           {PRIZES.map(p => (
             <article className={'bar bar--' + p.cls} key={p.rank}>
               <h3>{p.rank}</h3>
+              <b className="bar-team">{p.team}</b>
               <strong>{p.amount}</strong>
               <span>{p.reward}</span>
             </article>
@@ -966,7 +969,14 @@ function Awards() {
           ))}
           <article className="extra extra--lucky">
             <Gift size={30} aria-hidden="true" />
-            <div><h4>Lucky draw</h4><strong>Cuối chương trình</strong><span>Bốc thăm may mắn, danh sách quà tặng sẽ được công bố sau.</span></div>
+            <div>
+              <h4>Lucky draw</h4>
+              <ol className="lucky-list">
+                <li><span>Ngô Hoàng Long</span><b>500.000đ</b></li>
+                <li><span>Nguyễn Duy Minh Vũ</span><b>300.000đ</b></li>
+                <li><span>Nguyễn Hai Long</span><b>200.000đ</b></li>
+              </ol>
+            </div>
           </article>
         </div>
       </div>
